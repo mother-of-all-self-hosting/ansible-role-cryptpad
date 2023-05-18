@@ -1,0 +1,86 @@
+---
+
+- name: Ensure cryptpad paths exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ cryptpad_uid }}"
+    group: "{{ cryptpad_gid }}"
+  with_items:
+    - "{{ cryptpad_base_path }}"
+    - "{{ cryptpad_data_root_path }}"
+    - "{{ cryptpad_config_path }}"
+    - "{{ cryptpad_customize_path }}"
+    - "{{ cryptpad_block_path }}"
+    - "{{ cryptpad_data_path }}"
+    - "{{ cryptpad_files_path }}"
+    - "{{ cryptpad_blob_path }}"
+
+- name: Ensure cryptpad support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ cryptpad_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ cryptpad_uid }}"
+    group: "{{ cryptpad_gid }}"
+  with_items:
+    - env
+    - labels
+
+- name: Ensure cryptpad configuration is installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ cryptpad_config_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ cryptpad_uid }}"
+    group: "{{ cryptpad_gid }}"
+  with_items:
+    - config.js
+
+
+- name: Ensure cryptpad image is pulled
+  community.docker.docker_image:
+    name: "{{ cryptpad_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+  when: "not cryptpad_container_image_self_build | bool"
+
+- name: Ensure cryptpad repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ cryptpad_container_repo }}"
+    version: "{{ cryptpad_container_repo_version }}"
+    dest: "{{ cryptpad_container_src_files_path }}"
+    force: "yes"
+  register: cryptpad_git_pull_results
+  when: "cryptpad_container_image_self_build | bool"
+
+- name: Ensure cryptpad image is built
+  community.docker.docker_image:
+    name: "{{ cryptpad_container_image_name }}"
+    source: build
+    force_source: "{{ cryptpad_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mailer_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ cryptpad_container_src_files_path }}"
+      pull: true
+  when: "cryptpad_container_image_self_build | bool"
+
+
+- name: Ensure cryptpad.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/cryptpad.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ cryptpad_identifier }}.service"
+    mode: 0644
+
+
+- name: Ensure cryptpad container network is created
+  community.general.docker_network:
+    name: "{{ cryptpad_container_network }}"
+    driver: bridge
+
+- name: Ensure cryptpad systemd service is present
+  ansible.builtin.template:
+    mode: 0755
+    src: "{{ role_path }}/templates/systemd/cryptpad.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ cryptpad_identifier }}.service"

@@ -1,0 +1,20 @@
+---
+
+- block:
+    - when: cryptpad_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: cryptpad_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+  tags:
+    - setup-all
+    - setup-cryptpad
+    - install-all
+    - install-cryptpad
+
+- block:
+    - when: not cryptpad_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
+  tags:
+    - setup-all
+    - setup-cryptpad

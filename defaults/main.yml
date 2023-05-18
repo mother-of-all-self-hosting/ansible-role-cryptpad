@@ -1,0 +1,276 @@
+---
+
+# Project source code URL: https://github.com/xwiki-labs/cryptpad
+
+cryptpad_enabled: true
+
+cryptpad_identifier: cryptpad
+
+cryptpad_uid: ''
+cryptpad_gid: ''
+
+cryptpad_version: 5.2.1
+
+# CryptPad main domain FQDN
+cryptpad_main_domain: ''
+# CryptPad sandbox subdomain FQDN
+cryptpad_sandbox_domain: ''
+
+
+cryptpad_base_path: "/{{ cryptpad_identifier }}"
+cryptpad_data_root_path: "{{ cryptpad_base_path }}/data"
+cryptpad_config_path: "{{ cryptpad_base_path }}/config"
+cryptpad_customize_path: "{{ cryptpad_config_path }}/customize"
+cryptpad_block_path: "{{ cryptpad_data_root_path }}/block"
+cryptpad_data_path: "{{ cryptpad_data_root_path }}/data"
+cryptpad_files_path: "{{ cryptpad_data_root_path }}/files"
+cryptpad_blob_path: "{{ cryptpad_data_root_path }}/blob"
+
+cryptpad_container_image: "{{ cryptpad_container_image_registry_prefix }}{{ cryptpad_container_image_name }}"
+cryptpad_container_image_name: "promasu/cryptpad:{{ cryptpad_container_image_tag }}"
+cryptpad_container_image_registry_prefix: docker.io/
+cryptpad_container_image_tag: "v{{ cryptpad_version }}-alpine"
+cryptpad_container_image_force_pull: "{{ cryptpad_container_image.endswith(':latest') }}"
+
+cryptpad_container_image_self_build: false
+cryptpad_container_repo: "https://github.com/xwiki-labs/cryptpad-docker"
+cryptpad_container_repo_version: "{{ cryptpad_version if cryptpad_version != 'latest' else 'main' }}"
+cryptpad_container_src_files_path: "{{ cryptpad_base_path }}/docker-src"
+
+
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+cryptpad_container_network: "{{ cryptpad_identifier }}"
+
+# Port that the container will use for the web interface
+cryptpad_main_container_port: 3000
+
+# Port that the container will use for the web interface
+cryptpad_sandbox_container_port: 3001
+
+# Limit how much computing power CryptPad can take
+cryptpad_max_workers: 4
+
+cryptpad_admin_email: ""
+
+# The storage a user gets by default in MB
+cryptpad_default_storage_limit: 50
+
+# The maximus size of files uploaded to the server in MB
+cryptpad_maximum_upload_size: 20
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+cryptpad_container_additional_networks: []
+
+
+# cryptpad_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `cryptpad_container_labels_additional_labels`.
+cryptpad_container_labels_traefik_enabled: true
+cryptpad_container_labels_traefik_docker_network: "{{ cryptpad_container_network }}"
+
+########
+# MAIN #
+########
+
+cryptpad_main_container_labels_traefik_hostname: "{{ cryptpad_main_domain }}"
+cryptpad_main_container_labels_traefik_rule: "Host(`{{ cryptpad_main_container_labels_traefik_hostname }}`)"
+cryptpad_main_container_labels_traefik_priority: 0
+cryptpad_main_container_labels_traefik_entrypoints: web-secure
+cryptpad_main_container_labels_traefik_tls: "{{ cryptpad_main_container_labels_traefik_entrypoints != 'web' }}"
+cryptpad_main_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP requests.
+# To add your own custom request headers, use `cryptpad_main_container_labels_traefik_additional_response_headers_custom`
+cryptpad_main_container_labels_traefik_additional_request_headers: "{{ cryptpad_main_container_labels_traefik_additional_request_headers_auto | combine(cryptpad_main_container_labels_traefik_additional_request_headers_custom) }}"
+cryptpad_main_container_labels_traefik_additional_request_headers_auto: {}
+cryptpad_main_container_labels_traefik_additional_request_headers_custom: {}
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own custom response headers, use `cryptpad_main_container_labels_traefik_additional_response_headers_custom`
+cryptpad_main_container_labels_traefik_additional_response_headers: "{{ cryptpad_main_container_labels_traefik_additional_response_headers_auto | combine(cryptpad_main_container_labels_traefik_additional_response_headers_custom) }}"
+cryptpad_main_container_labels_traefik_additional_response_headers_auto: |
+  {{
+    {}
+    | combine ({'X-XSS-Protection': cryptpad_main_http_header_xss_protection} if cryptpad_main_http_header_xss_protection else {})
+    | combine ({'X-Frame-Options': cryptpad_main_http_header_frame_options} if cryptpad_main_http_header_frame_options else {})
+    | combine ({'X-Content-Type-Options': cryptpad_main_http_header_content_type_options} if cryptpad_main_http_header_content_type_options else {})
+    | combine ({'Content-Security-Policy': cryptpad_main_http_header_content_security_policy} if cryptpad_main_http_header_content_security_policy else {})
+    | combine ({'Permission-Policy': cryptpad_main_http_header_content_permission_policy} if cryptpad_main_http_header_content_permission_policy else {})
+    | combine ({'Strict-Transport-Security': cryptpad_main_http_header_strict_transport_security} if cryptpad_main_http_header_strict_transport_security and cryptpad_main_container_labels_traefik_tls else {})
+  }}
+cryptpad_main_container_labels_traefik_additional_response_headers_custom: {}
+
+
+# Specifies the value of the `X-XSS-Protection` header
+# Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
+#
+# Learn more about it is here:
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+# - https://portswigger.net/web-security/cross-site-scripting/reflected
+cryptpad_main_http_header_xss_protection: "1; mode=block"
+
+# Specifies the value of the `X-Frame-Options` header which controls whether framing can happen.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+cryptpad_main_http_header_frame_options: SAMEORIGIN
+
+# Specifies the value of the `X-Content-Type-Options` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+cryptpad_main_http_header_content_type_options: nosniff
+
+# Specifies the value of the `Content-Security-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+cryptpad_main_http_header_content_security_policy: frame-ancestors 'self'
+
+# Specifies the value of the `Permission-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
+cryptpad_main_http_header_content_permission_policy: "{{ 'interest-cohort=()' if cryptpad_floc_optout_enabled else '' }}"
+
+# Specifies the value of the `Strict-Transport-Security` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+cryptpad_main_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if cryptpad_main_hsts_preload_enabled else '' }}"
+
+
+
+# Controls if HSTS preloading is enabled
+#
+# In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
+# indicates a willingness to be "preloaded" into browsers:
+# `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+# For more information visit:
+# - https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+# - https://hstspreload.org/#opt-in
+# See: `cryptpad_http_header_strict_transport_security`
+cryptpad_main_hsts_preload_enabled: false
+
+###########
+# SANDBOX #
+###########
+
+cryptpad_sandbox_container_labels_traefik_hostname: "{{ cryptpad_sandbox_domain }}"
+cryptpad_sandbox_container_labels_traefik_rule: "Host(`{{ cryptpad_sandbox_container_labels_traefik_hostname }}`)"
+cryptpad_sandbox_container_labels_traefik_priority: 0
+cryptpad_sandbox_container_labels_traefik_entrypoints: web-secure
+cryptpad_sandbox_container_labels_traefik_tls: "{{ cryptpad_sandbox_container_labels_traefik_entrypoints != 'web' }}"
+cryptpad_sandbox_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP requests.
+# To add your own custom request headers, use `cryptpad_sandbox_container_labels_traefik_additional_response_headers_custom`
+cryptpad_sandbox_container_labels_traefik_additional_request_headers: "{{ cryptpad_sandbox_container_labels_traefik_additional_request_headers_auto | combine(cryptpad_sandbox_container_labels_traefik_additional_request_headers_custom) }}"
+cryptpad_sandbox_container_labels_traefik_additional_request_headers_auto: {}
+cryptpad_sandbox_container_labels_traefik_additional_request_headers_custom: {}
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own custom response headers, use `cryptpad_sandbox_container_labels_traefik_additional_response_headers_custom`
+cryptpad_sandbox_container_labels_traefik_additional_response_headers: "{{ cryptpad_sandbox_container_labels_traefik_additional_response_headers_auto | combine(cryptpad_sandbox_container_labels_traefik_additional_response_headers_custom) }}"
+cryptpad_sandbox_container_labels_traefik_additional_response_headers_auto: |
+  {{
+    {}
+    | combine ({'X-XSS-Protection': cryptpad_sandbox_http_header_xss_protection} if cryptpad_sandbox_http_header_xss_protection else {})
+    | combine ({'X-Frame-Options': cryptpad_sandbox_http_header_frame_options} if cryptpad_sandbox_http_header_frame_options else {})
+    | combine ({'X-Content-Type-Options': cryptpad_sandbox_http_header_content_type_options} if cryptpad_sandbox_http_header_content_type_options else {})
+    | combine ({'Content-Security-Policy': cryptpad_sandbox_http_header_content_security_policy} if cryptpad_sandbox_http_header_content_security_policy else {})
+    | combine ({'Permission-Policy': cryptpad_sandbox_http_header_content_permission_policy} if cryptpad_sandbox_http_header_content_permission_policy else {})
+    | combine ({'Strict-Transport-Security': cryptpad_sandbox_http_header_strict_transport_security} if cryptpad_sandbox_http_header_strict_transport_security and cryptpad_sandbox_container_labels_traefik_tls else {})
+    | combine ({'Access-Control-Allow-Origin': cryptpad_sandbox_http_header_access_control_allow_origin} if cryptpad_sandbox_http_header_access_control_allow_origin and cryptpad_sandbox_http_header_access_control_allow_origin else {})
+  }}
+cryptpad_sandbox_container_labels_traefik_additional_response_headers_custom: {}
+
+
+
+
+# Specifies the value of the `X-XSS-Protection` header
+# Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
+#
+# Learn more about it is here:
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+# - https://portswigger.net/web-security/cross-site-scripting/reflected
+cryptpad_sandbox_http_header_xss_protection: "1; mode=block"
+
+# Specifies the value of the `X-Frame-Options` header which controls whether framing can happen.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+cryptpad_sandbox_http_header_frame_options: SAMEORIGIN
+
+# Specifies the value of the `X-Content-Type-Options` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+cryptpad_sandbox_http_header_content_type_options: nosniff
+
+# Specifies the value of the `Content-Security-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+cryptpad_sandbox_http_header_content_security_policy: "frame-ancestors 'self' https://{{ cryptpad_main_domain }}"
+
+# Specifies the value of the `Permission-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
+cryptpad_sandbox_http_header_content_permission_policy: "{{ 'interest-cohort=()' if cryptpad_floc_optout_enabled else '' }}"
+
+# Specifies the value of the `Strict-Transport-Security` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+cryptpad_sandbox_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if cryptpad_sandbox_hsts_preload_enabled else '' }}"
+
+# Specifies the value of the ` Access-Control-Allow-Origin` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+cryptpad_sandbox_http_header_access_control_allow_origin: "*"
+
+# Controls if HSTS preloading is enabled
+#
+# In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
+# indicates a willingness to be "preloaded" into browsers:
+# `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+# For more information visit:
+# - https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+# - https://hstspreload.org/#opt-in
+# See: `cryptpad_http_header_strict_transport_security`
+cryptpad_sandbox_hsts_preload_enabled: false
+
+
+
+# Specifies how often the container health-check will run.
+#
+# For Traefik based setups, it's important that the interval is short,
+# because the interval value also specifies the "initial wait time".
+# This is a Docker (moby) bug: https://github.com/moby/moby/issues/33410
+# Without a successful healthcheck, Traefik will not register the service for reverse-proxying.
+# Thus, the health interval determines the initial start-up time -- the smaller, the better.
+#
+# For non-Traefik setups, we use the default healthcheck interval (60s) to decrease overhead.
+cryptpad_container_health_interval: "{{ '5s' if cryptpad_container_labels_traefik_enabled else '60s' }}"
+
+# A list of additional "volumes" to mount in the container.
+# This list gets populated dynamically at runtime. You can provide a different default value,
+# if you wish to mount your own files into the container.
+# Contains definition objects like this: `{"type": "bind", "src": "/outside", "dst": "/inside", "options": "readonly"}.
+# See the `--mount` documentation for the `docker run` command.
+cryptpad_container_additional_volumes: []
+
+# A list of extra arguments to pass to the container
+cryptpad_container_extra_arguments: []
+
+# Additional environment variables.
+cryptpad_environment_variables_additional_variables: ''
+
+# Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
+#
+# Learn more about what it is here:
+# - https://www.eff.org/deeplinks/2021/03/googles-floc-terrible-idea
+# - https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network
+# - https://amifloced.org/
+#
+# Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
+# See: `cryptpad_content_permission_policy`
+cryptpad_floc_optout_enabled: true
+
+# cryptpad_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# cryptpad_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+cryptpad_container_labels_additional_labels: ''
+
+# List of systemd services that cryptpad.service depends on
+cryptpad_systemd_required_services_list: ['docker.service']

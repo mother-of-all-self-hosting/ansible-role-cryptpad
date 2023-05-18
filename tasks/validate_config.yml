@@ -1,0 +1,25 @@
+---
+
+- name: Fail if required cryptpad settings not defined
+  ansible.builtin.fail:
+    msg: >
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - cryptpad_identifier
+    - cryptpad_uid
+    - cryptpad_gid
+    - cryptpad_main_domain
+    - cryptpad_sandbox_domain
+    - cryptpad_admin_email
+
+- when: cryptpad_container_labels_traefik_enabled | bool
+  block:
+    - name: Fail if required cryptpad Traefik settings not defined
+      ansible.builtin.fail:
+        msg: >-
+          You need to define a required configuration setting (`{{ item }}`).
+      when: "vars[item] == ''"
+      with_items:
+        - cryptpad_main_domain
+        - cryptpad_sandbox_domain

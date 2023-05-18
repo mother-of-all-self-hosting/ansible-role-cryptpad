@@ -1,0 +1,74 @@
+{% if cryptpad_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if cryptpad_container_labels_traefik_docker_network %}
+traefik.docker.network={{ cryptpad_container_labels_traefik_docker_network }}
+{% endif %}
+
+{% set middlewares = [] %}
+
+{% if cryptpad_main_container_labels_traefik_additional_request_headers.keys() | length > 0 %}
+{% for name, value in cryptpad_main_container_labels_traefik_additional_request_headers.items() %}
+traefik.http.middlewares.{{ cryptpad_identifier }}-main-add-request-headers.headers.customrequestheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + [cryptpad_identifier + '-main-add-request-headers'] %}
+{% endif %}
+
+{% if cryptpad_main_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in cryptpad_main_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.{{ cryptpad_identifier }}-main-add-response-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + [cryptpad_identifier + '-main-add-response-headers'] %}
+{% endif %}
+
+traefik.http.routers.{{ cryptpad_identifier }}-main.rule={{ cryptpad_main_container_labels_traefik_rule }}
+{% if cryptpad_main_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.{{ cryptpad_identifier }}-main.priority={{ cryptpad_main_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.{{ cryptpad_identifier }}-main.service={{ cryptpad_identifier }}-main
+{% if middlewares | length > 0 %}
+traefik.http.routers.{{ cryptpad_identifier }}-main.middlewares={{ middlewares | join(',') }}
+{% endif %}
+traefik.http.routers.{{ cryptpad_identifier }}-main.entrypoints={{ cryptpad_main_container_labels_traefik_entrypoints }}
+traefik.http.routers.{{ cryptpad_identifier }}-main.tls={{ cryptpad_main_container_labels_traefik_tls | to_json }}
+{% if cryptpad_main_container_labels_traefik_tls %}
+traefik.http.routers.{{ cryptpad_identifier }}-main.tls.certResolver={{ cryptpad_main_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.{{ cryptpad_identifier }}-main.loadbalancer.server.port={{ cryptpad_main_container_port }}
+
+
+{% set middlewares = [] %}
+
+{% if cryptpad_sandbox_container_labels_traefik_additional_request_headers.keys() | length > 0 %}
+{% for name, value in cryptpad_sandbox_container_labels_traefik_additional_request_headers.items() %}
+traefik.http.middlewares.{{ cryptpad_identifier }}-sandbox-add-request-headers.headers.customrequestheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + [cryptpad_identifier + '-sandbox-add-request-headers'] %}
+{% endif %}
+
+{% if cryptpad_sandbox_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in cryptpad_sandbox_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.{{ cryptpad_identifier }}-sandbox-add-response-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + [cryptpad_identifier + '-sandbox-add-response-headers'] %}
+{% endif %}
+
+traefik.http.routers.{{ cryptpad_identifier }}-sandbox.rule={{ cryptpad_sandbox_container_labels_traefik_rule }}
+{% if cryptpad_sandbox_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.{{ cryptpad_identifier }}-sandbox-sandbox.priority={{ cryptpad_sandbox_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.{{ cryptpad_identifier }}-sandbox.service={{ cryptpad_identifier }}-sandbox
+{% if middlewares | length > 0 %}
+traefik.http.routers.{{ cryptpad_identifier }}-sandbox.middlewares={{ middlewares | join(',') }}
+{% endif %}
+traefik.http.routers.{{ cryptpad_identifier }}-sandbox.entrypoints={{ cryptpad_sandbox_container_labels_traefik_entrypoints }}
+traefik.http.routers.{{ cryptpad_identifier }}-sandbox.tls={{ cryptpad_sandbox_container_labels_traefik_tls | to_json }}
+{% if cryptpad_sandbox_container_labels_traefik_tls %}
+traefik.http.routers.{{ cryptpad_identifier }}-sandbox.tls.certResolver={{ cryptpad_sandbox_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.{{ cryptpad_identifier }}-sandbox.loadbalancer.server.port={{ cryptpad_sandbox_container_port }}
+{% endif %}
+
+{{ cryptpad_container_labels_additional_labels }}
