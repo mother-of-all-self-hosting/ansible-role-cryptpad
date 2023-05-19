@@ -52,6 +52,9 @@ cryptpad_max_workers: 4
 
 cryptpad_admin_email: ""
 
+cryptpad_log_to_stdout: 'false'
+cryptpad_log_level: 'info'
+
 # The storage a user gets by default in MB
 cryptpad_default_storage_limit: 50
 

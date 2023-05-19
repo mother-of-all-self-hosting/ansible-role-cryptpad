@@ -290,7 +290,7 @@ module.exports = {
     /*  CryptPad can log activity to stdout
      *  This may be useful for debugging
      */
-    logToStdout: false,
+    logToStdout: {{ cryptpad_log_to_stdout|to_json }},
 
     /* CryptPad can be configured to log more or less
      * the various settings are listed below by order of importance
@@ -303,7 +303,7 @@ module.exports = {
      *
      * This will affect both logging to the console and the disk.
      */
-    logLevel: 'info',
+    logLevel: '{{ cryptpad_log_level }}',
 
     /*  clients can use the /settings/ app to opt out of usage feedback
      *  which informs the server of things like how much each app is being
