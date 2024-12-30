@@ -1,6 +1,6 @@
 ---
 
-# Project source code URL: https://github.com/xwiki-labs/cryptpad
+# Project source code URL: https://github.com/cryptpad/cryptpad
 
 cryptpad_enabled: true
 
@@ -9,7 +9,7 @@ cryptpad_identifier: cryptpad
 cryptpad_uid: ''
 cryptpad_gid: ''
 
-cryptpad_version: 5.2.1
+cryptpad_version: 2024.12.0
 
 # CryptPad main domain FQDN
 cryptpad_main_domain: ''
@@ -27,13 +27,13 @@ cryptpad_files_path: "{{ cryptpad_data_root_path }}/files"
 cryptpad_blob_path: "{{ cryptpad_data_root_path }}/blob"
 
 cryptpad_container_image: "{{ cryptpad_container_image_registry_prefix }}{{ cryptpad_container_image_name }}"
-cryptpad_container_image_name: "promasu/cryptpad:{{ cryptpad_container_image_tag }}"
+cryptpad_container_image_name: "cryptpad/cryptpad:{{ cryptpad_container_image_tag }}"
 cryptpad_container_image_registry_prefix: docker.io/
-cryptpad_container_image_tag: "v{{ cryptpad_version }}-alpine"
+cryptpad_container_image_tag: "version-{{ cryptpad_version }}"
 cryptpad_container_image_force_pull: "{{ cryptpad_container_image.endswith(':latest') }}"
 
 cryptpad_container_image_self_build: false
-cryptpad_container_repo: "https://github.com/xwiki-labs/cryptpad-docker"
+cryptpad_container_repo: "https://github.com/cryptpad/cryptpad"
 cryptpad_container_repo_version: "{{ cryptpad_version if cryptpad_version != 'latest' else 'main' }}"
 cryptpad_container_src_files_path: "{{ cryptpad_base_path }}/docker-src"
 
