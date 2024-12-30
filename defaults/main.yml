@@ -29,7 +29,7 @@ cryptpad_blob_path: "{{ cryptpad_data_root_path }}/blob"
 cryptpad_container_image: "{{ cryptpad_container_image_registry_prefix }}{{ cryptpad_container_image_name }}"
 cryptpad_container_image_name: "cryptpad/cryptpad:{{ cryptpad_container_image_tag }}"
 cryptpad_container_image_registry_prefix: docker.io/
-cryptpad_container_image_tag: "{{ cryptpad_version }}"
+cryptpad_container_image_tag: "version-{{ cryptpad_version }}"
 cryptpad_container_image_force_pull: "{{ cryptpad_container_image.endswith(':latest') }}"
 
 cryptpad_container_image_self_build: false
