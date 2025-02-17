@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 #jinja2: lstrip_blocks: "True"
 [Unit]
-Description=Cryptpad Server ({{ cryptpad_identifier }})
+Description=CryptPad Server ({{ cryptpad_identifier }})
 {% for service in cryptpad_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}

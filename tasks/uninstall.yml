@@ -4,26 +4,26 @@
 
 ---
 
-- name: Check existence of Cryptpad systemd service
+- name: Check existence of CryptPad systemd service
   ansible.builtin.stat:
     path: "{{ devture_systemd_docker_base_systemd_path }}/{{ cryptpad_identifier }}.service"
   register: cryptpad_service_stat
 
 - when: cryptpad_service_stat.stat.exists | bool
   block:
-    - name: Ensure Cryptpad systemd service is stopped
+    - name: Ensure CryptPad systemd service is stopped
       ansible.builtin.service:
         name: "{{ cryptpad_identifier }}"
         state: stopped
         enabled: false
         daemon_reload: true
 
-    - name: Ensure Cryptpad systemd service does not exist
+    - name: Ensure CryptPad systemd service does not exist
       ansible.builtin.file:
         path: "{{ devture_systemd_docker_base_systemd_path }}/{{ cryptpad_identifier }}.service"
         state: absent
 
-    - name: Ensure Cryptpad path doesn't exist
+    - name: Ensure CryptPad path doesn't exist
       ansible.builtin.file:
         path: "{{ cryptpad_base_path }}"
         state: absent
