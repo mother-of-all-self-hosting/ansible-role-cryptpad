@@ -1,6 +1,10 @@
+# SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
-- name: Ensure cryptpad paths exist
+- name: Ensure CryptPad paths exist
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -17,7 +21,7 @@
     - "{{ cryptpad_files_path }}"
     - "{{ cryptpad_blob_path }}"
 
-- name: Ensure cryptpad support files installed
+- name: Ensure CryptPad support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ cryptpad_base_path }}/{{ item }}"
@@ -28,7 +32,7 @@
     - env
     - labels
 
-- name: Ensure cryptpad configuration is installed
+- name: Ensure CryptPad configuration is installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ cryptpad_config_path }}/{{ item }}"
@@ -39,13 +43,13 @@
     - config.js
 
 
-- name: Ensure cryptpad image is pulled
+- name: Ensure CryptPad image is pulled
   community.docker.docker_image:
     name: "{{ cryptpad_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
   when: "not cryptpad_container_image_self_build | bool"
 
-- name: Ensure cryptpad repository is present on self-build
+- name: Ensure CryptPad repository is present on self-build
   ansible.builtin.git:
     repo: "{{ cryptpad_container_repo }}"
     version: "{{ cryptpad_container_repo_version }}"
@@ -54,7 +58,7 @@
   register: cryptpad_git_pull_results
   when: "cryptpad_container_image_self_build | bool"
 
-- name: Ensure cryptpad image is built
+- name: Ensure CryptPad image is built
   community.docker.docker_image:
     name: "{{ cryptpad_container_image_name }}"
     source: build
@@ -74,12 +78,12 @@
     mode: 0644
 
 
-- name: Ensure cryptpad container network is created
+- name: Ensure CryptPad container network is created
   community.general.docker_network:
     name: "{{ cryptpad_container_network }}"
     driver: bridge
 
-- name: Ensure cryptpad systemd service is present
+- name: Ensure CryptPad systemd service is present
   ansible.builtin.template:
     mode: 0755
     src: "{{ role_path }}/templates/systemd/cryptpad.service.j2"
