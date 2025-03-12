@@ -13,9 +13,8 @@
     - cryptpad_identifier
     - cryptpad_uid
     - cryptpad_gid
-    - cryptpad_main_domain
-    - cryptpad_sandbox_domain
-    - cryptpad_admin_email
+    - cryptpad_main_hostname
+    - cryptpad_sandbox_hostname
 
 - when: cryptpad_container_labels_traefik_enabled | bool
   block:
@@ -25,5 +24,5 @@
           You need to define a required configuration setting (`{{ item }}`).
       when: "vars[item] == ''"
       with_items:
-        - cryptpad_main_domain
-        - cryptpad_sandbox_domain
+        - cryptpad_main_hostname
+        - cryptpad_sandbox_hostname

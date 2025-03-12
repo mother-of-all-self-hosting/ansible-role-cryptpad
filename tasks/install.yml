@@ -42,7 +42,6 @@
   with_items:
     - config.js
 
-
 - name: Ensure CryptPad image is pulled
   community.docker.docker_image:
     name: "{{ cryptpad_container_image }}"

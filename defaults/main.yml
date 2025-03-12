@@ -17,9 +17,9 @@ cryptpad_gid: ''
 cryptpad_version: 2024.12.0
 
 # CryptPad main domain FQDN
-cryptpad_main_domain: ''
+cryptpad_main_hostname: ''
 # CryptPad sandbox subdomain FQDN
-cryptpad_sandbox_domain: ''
+cryptpad_sandbox_hostname: ''
 
 
 cryptpad_base_path: "/{{ cryptpad_identifier }}"
@@ -83,7 +83,7 @@ cryptpad_container_labels_traefik_docker_network: "{{ cryptpad_container_network
 # MAIN #
 ########
 
-cryptpad_main_container_labels_traefik_hostname: "{{ cryptpad_main_domain }}"
+cryptpad_main_container_labels_traefik_hostname: "{{ cryptpad_main_hostname }}"
 cryptpad_main_container_labels_traefik_rule: "Host(`{{ cryptpad_main_container_labels_traefik_hostname }}`)"
 cryptpad_main_container_labels_traefik_priority: 0
 cryptpad_main_container_labels_traefik_entrypoints: web-secure
@@ -158,7 +158,7 @@ cryptpad_main_hsts_preload_enabled: false
 # SANDBOX #
 ###########
 
-cryptpad_sandbox_container_labels_traefik_hostname: "{{ cryptpad_sandbox_domain }}"
+cryptpad_sandbox_container_labels_traefik_hostname: "{{ cryptpad_sandbox_hostname }}"
 cryptpad_sandbox_container_labels_traefik_rule: "Host(`{{ cryptpad_sandbox_container_labels_traefik_hostname }}`)"
 cryptpad_sandbox_container_labels_traefik_priority: 0
 cryptpad_sandbox_container_labels_traefik_entrypoints: web-secure
@@ -208,7 +208,7 @@ cryptpad_sandbox_http_header_content_type_options: nosniff
 
 # Specifies the value of the `Content-Security-Policy` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
-cryptpad_sandbox_http_header_content_security_policy: "frame-ancestors 'self' https://{{ cryptpad_main_domain }}"
+cryptpad_sandbox_http_header_content_security_policy: "frame-ancestors 'self' https://{{ cryptpad_main_hostname }}"
 
 # Specifies the value of the `Permission-Policy` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
