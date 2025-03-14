@@ -130,7 +130,18 @@ cryptpad_main_http_header_content_type_options: nosniff
 
 # Specifies the value of the `Content-Security-Policy` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
-cryptpad_main_http_header_content_security_policy: frame-ancestors 'self'
+cryptpad_main_http_header_content_security_policy: >
+  default-src 'none';
+  style-src 'unsafe-inline' 'self' https://{{ cryptpad_main_hostname }};
+  font-src 'self' data: https://{{ cryptpad_main_hostname }};
+  child-src https://{{ cryptpad_main_hostname }};
+  frame-src 'self' blob: https://{{ cryptpad_sandbox_hostname }};
+  script-src 'self' resource: https://{{ cryptpad_main_hostname }};
+  connect-src 'self' blob: https://{{ cryptpad_main_hostname }} https://{{ cryptpad_sandbox_hostname }} wss://{{ cryptpad_main_hostname }};
+  img-src 'self' data: blob: https://{{ cryptpad_main_hostname }};
+  media-src blob:;
+  frame-ancestors 'self' https://{{ cryptpad_main_hostname }};
+  worker-src 'self';"
 
 # Specifies the value of the `Permission-Policy` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
