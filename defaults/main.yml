@@ -84,7 +84,8 @@ cryptpad_container_labels_traefik_docker_network: "{{ cryptpad_container_network
 ########
 
 cryptpad_main_container_labels_traefik_hostname: "{{ cryptpad_main_hostname }}"
-cryptpad_main_container_labels_traefik_rule: "Host(`{{ cryptpad_main_container_labels_traefik_hostname }}`)"
+cryptpad_sandbox_container_labels_traefik_hostname: "{{ cryptpad_sandbox_hostname }}"
+cryptpad_main_container_labels_traefik_rule: "Host(`{{ cryptpad_main_container_labels_traefik_hostname }}`) || Host(`{{ cryptpad_sandbox_container_labels_traefik_hostname }}`)"
 cryptpad_main_container_labels_traefik_priority: 0
 cryptpad_main_container_labels_traefik_entrypoints: web-secure
 cryptpad_main_container_labels_traefik_tls: "{{ cryptpad_main_container_labels_traefik_entrypoints != 'web' }}"
@@ -164,87 +165,6 @@ cryptpad_main_http_header_strict_transport_security: "max-age=31536000; includeS
 # - https://hstspreload.org/#opt-in
 # See: `cryptpad_http_header_strict_transport_security`
 cryptpad_main_hsts_preload_enabled: false
-
-###########
-# SANDBOX #
-###########
-
-cryptpad_sandbox_container_labels_traefik_hostname: "{{ cryptpad_sandbox_hostname }}"
-cryptpad_sandbox_container_labels_traefik_rule: "Host(`{{ cryptpad_sandbox_container_labels_traefik_hostname }}`)"
-cryptpad_sandbox_container_labels_traefik_priority: 0
-cryptpad_sandbox_container_labels_traefik_entrypoints: web-secure
-cryptpad_sandbox_container_labels_traefik_tls: "{{ cryptpad_sandbox_container_labels_traefik_entrypoints != 'web' }}"
-cryptpad_sandbox_container_labels_traefik_tls_certResolver: default  # noqa var-naming
-
-# Controls which additional headers to attach to all HTTP requests.
-# To add your own custom request headers, use `cryptpad_sandbox_container_labels_traefik_additional_response_headers_custom`
-cryptpad_sandbox_container_labels_traefik_additional_request_headers: "{{ cryptpad_sandbox_container_labels_traefik_additional_request_headers_auto | combine(cryptpad_sandbox_container_labels_traefik_additional_request_headers_custom) }}"
-cryptpad_sandbox_container_labels_traefik_additional_request_headers_auto: {}
-cryptpad_sandbox_container_labels_traefik_additional_request_headers_custom: {}
-
-# Controls which additional headers to attach to all HTTP responses.
-# To add your own custom response headers, use `cryptpad_sandbox_container_labels_traefik_additional_response_headers_custom`
-cryptpad_sandbox_container_labels_traefik_additional_response_headers: "{{ cryptpad_sandbox_container_labels_traefik_additional_response_headers_auto | combine(cryptpad_sandbox_container_labels_traefik_additional_response_headers_custom) }}"
-cryptpad_sandbox_container_labels_traefik_additional_response_headers_auto: |
-  {{
-    {}
-    | combine ({'X-XSS-Protection': cryptpad_sandbox_http_header_xss_protection} if cryptpad_sandbox_http_header_xss_protection else {})
-    | combine ({'X-Frame-Options': cryptpad_sandbox_http_header_frame_options} if cryptpad_sandbox_http_header_frame_options else {})
-    | combine ({'X-Content-Type-Options': cryptpad_sandbox_http_header_content_type_options} if cryptpad_sandbox_http_header_content_type_options else {})
-    | combine ({'Content-Security-Policy': cryptpad_sandbox_http_header_content_security_policy} if cryptpad_sandbox_http_header_content_security_policy else {})
-    | combine ({'Permission-Policy': cryptpad_sandbox_http_header_content_permission_policy} if cryptpad_sandbox_http_header_content_permission_policy else {})
-    | combine ({'Strict-Transport-Security': cryptpad_sandbox_http_header_strict_transport_security} if cryptpad_sandbox_http_header_strict_transport_security and cryptpad_sandbox_container_labels_traefik_tls else {})
-    | combine ({'Access-Control-Allow-Origin': cryptpad_sandbox_http_header_access_control_allow_origin} if cryptpad_sandbox_http_header_access_control_allow_origin and cryptpad_sandbox_http_header_access_control_allow_origin else {})
-  }}
-cryptpad_sandbox_container_labels_traefik_additional_response_headers_custom: {}
-
-
-
-
-# Specifies the value of the `X-XSS-Protection` header
-# Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
-#
-# Learn more about it is here:
-# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
-# - https://portswigger.net/web-security/cross-site-scripting/reflected
-cryptpad_sandbox_http_header_xss_protection: "1; mode=block"
-
-# Specifies the value of the `X-Frame-Options` header which controls whether framing can happen.
-# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-cryptpad_sandbox_http_header_frame_options: SAMEORIGIN
-
-# Specifies the value of the `X-Content-Type-Options` header.
-# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
-cryptpad_sandbox_http_header_content_type_options: nosniff
-
-# Specifies the value of the `Content-Security-Policy` header.
-# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
-cryptpad_sandbox_http_header_content_security_policy: "frame-ancestors 'self' https://{{ cryptpad_main_hostname }}"
-
-# Specifies the value of the `Permission-Policy` header.
-# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
-cryptpad_sandbox_http_header_content_permission_policy: "{{ 'interest-cohort=()' if cryptpad_floc_optout_enabled else '' }}"
-
-# Specifies the value of the `Strict-Transport-Security` header.
-# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
-cryptpad_sandbox_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if cryptpad_sandbox_hsts_preload_enabled else '' }}"
-
-# Specifies the value of the ` Access-Control-Allow-Origin` header.
-# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
-cryptpad_sandbox_http_header_access_control_allow_origin: "*"
-
-# Controls if HSTS preloading is enabled
-#
-# In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
-# indicates a willingness to be "preloaded" into browsers:
-# `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
-# For more information visit:
-# - https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
-# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
-# - https://hstspreload.org/#opt-in
-# See: `cryptpad_http_header_strict_transport_security`
-cryptpad_sandbox_hsts_preload_enabled: false
-
 
 
 # Specifies how often the container health-check will run.
