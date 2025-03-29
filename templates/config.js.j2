@@ -155,6 +155,9 @@ module.exports = {
      *
      */
     adminKeys: [
+{% for admin_key in cryptpad_admin_keys %}
+      "{{ admin_key }}",
+{% endfor %}
 
     ],
 

@@ -22,6 +22,14 @@ cryptpad_main_hostname: ''
 cryptpad_sandbox_hostname: ''
 
 
+# CryptPad contains an administration panel. Its access is restricted to specific users, identified by their public signing
+# key, which can be found on the settings page for registered users.
+# cryptpad_admin_keys:
+#  - "[cryptpad-user1@example.org/YZgXQxKR0Rcb6r6CmxHPdAGLVludrAF2lEnkbx1vVOo=]"
+#  - "[cryptpad-user2@example.org/YZgXXXXXXXXXXXXXXXXXXAGLVludrAF2lEnkbx1vVYY=]"
+cryptpad_admin_keys: []
+
+
 cryptpad_base_path: "/{{ cryptpad_identifier }}"
 cryptpad_data_root_path: "{{ cryptpad_base_path }}/data"
 cryptpad_config_path: "{{ cryptpad_base_path }}/config"
