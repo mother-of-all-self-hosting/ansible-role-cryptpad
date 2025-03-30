@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-
 # Project source code URL: https://github.com/cryptpad/cryptpad
 
 cryptpad_enabled: true
@@ -21,14 +20,12 @@ cryptpad_main_hostname: ''
 # CryptPad sandbox subdomain FQDN
 cryptpad_sandbox_hostname: ''
 
-
 # CryptPad contains an administration panel. Its access is restricted to specific users, identified by their public signing
 # key, which can be found on the settings page for registered users.
 # cryptpad_admin_keys:
 #  - "[cryptpad-user1@example.org/YZgXQxKR0Rcb6r6CmxHPdAGLVludrAF2lEnkbx1vVOo=]"
 #  - "[cryptpad-user2@example.org/YZgXXXXXXXXXXXXXXXXXXAGLVludrAF2lEnkbx1vVYY=]"
 cryptpad_admin_keys: []
-
 
 cryptpad_base_path: "/{{ cryptpad_identifier }}"
 cryptpad_data_root_path: "{{ cryptpad_base_path }}/data"
@@ -49,7 +46,6 @@ cryptpad_container_image_self_build: false
 cryptpad_container_repo: "https://github.com/cryptpad/cryptpad"
 cryptpad_container_repo_version: "{{ cryptpad_version if cryptpad_version != 'latest' else 'main' }}"
 cryptpad_container_src_files_path: "{{ cryptpad_base_path }}/docker-src"
-
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
 cryptpad_container_network: "{{ cryptpad_identifier }}"
@@ -78,7 +74,6 @@ cryptpad_maximum_upload_size: 20
 # The role does not create these networks, so make sure they already exist.
 # Use this to expose this container to another reverse proxy, which runs in a different container network.
 cryptpad_container_additional_networks: []
-
 
 # cryptpad_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
 # See `../templates/labels.j2` for details.
@@ -119,7 +114,6 @@ cryptpad_main_container_labels_traefik_additional_response_headers_auto: |
   }}
 cryptpad_main_container_labels_traefik_additional_response_headers_custom: {}
 
-
 # Specifies the value of the `X-XSS-Protection` header
 # Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
 #
@@ -155,8 +149,6 @@ cryptpad_main_http_header_content_permission_policy: "{{ 'interest-cohort=()' if
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
 cryptpad_main_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if cryptpad_main_hsts_preload_enabled else '' }}"
 
-
-
 # Controls if HSTS preloading is enabled
 #
 # In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
@@ -168,7 +160,6 @@ cryptpad_main_http_header_strict_transport_security: "max-age=31536000; includeS
 # - https://hstspreload.org/#opt-in
 # See: `cryptpad_http_header_strict_transport_security`
 cryptpad_main_hsts_preload_enabled: false
-
 
 # Specifies how often the container health-check will run.
 #
