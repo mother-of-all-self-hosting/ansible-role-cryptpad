@@ -63,7 +63,7 @@
 
 
 - name: Ensure CryptPad container network is created
-  community.general.docker_network:
+  community.docker.docker_network:
     name: "{{ cryptpad_container_network }}"
     driver: bridge
 
