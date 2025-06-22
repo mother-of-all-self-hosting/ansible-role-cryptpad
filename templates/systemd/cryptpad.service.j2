@@ -1,5 +1,6 @@
 {#
 SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2025 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
@@ -40,7 +41,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% for arg in cryptpad_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ cryptpad_container_image }}
+			{{ cryptpad_container_image_self_build_name if cryptpad_container_image_self_build else cryptpad_container_image }}
 
 
 {% for network in cryptpad_container_additional_networks %}

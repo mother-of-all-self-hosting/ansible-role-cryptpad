@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
 # SPDX-FileCopyrightText: 2024 neokyx
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -42,9 +43,10 @@ cryptpad_container_image_tag: "version-{{ cryptpad_version }}"
 cryptpad_container_image_force_pull: "{{ cryptpad_container_image.endswith(':latest') }}"
 
 cryptpad_container_image_self_build: false
-cryptpad_container_repo: "https://github.com/cryptpad/cryptpad"
-cryptpad_container_repo_version: "{{ cryptpad_version if cryptpad_version != 'latest' else 'main' }}"
-cryptpad_container_src_files_path: "{{ cryptpad_base_path }}/docker-src"
+cryptpad_container_image_self_build_name: "cryptpad/cryptpad:{{ cryptpad_container_image_self_build_repo_version }}"
+cryptpad_container_image_self_build_repo: "https://github.com/cryptpad/cryptpad.git"
+cryptpad_container_image_self_build_repo_version: "{{ cryptpad_version if cryptpad_version != 'latest' else 'main' }}"
+cryptpad_container_image_self_build_src_files_path: "{{ cryptpad_base_path }}/docker-src"
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
 cryptpad_container_network: "{{ cryptpad_identifier }}"
