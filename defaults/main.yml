@@ -29,8 +29,7 @@ cryptpad_admin_keys: []
 
 cryptpad_base_path: "/{{ cryptpad_identifier }}"
 cryptpad_data_root_path: "{{ cryptpad_base_path }}/data"
-cryptpad_config_path: "{{ cryptpad_base_path }}/config"
-cryptpad_customize_path: "{{ cryptpad_config_path }}/customize"
+cryptpad_customize_path: "{{ cryptpad_base_path }}/customize"
 cryptpad_block_path: "{{ cryptpad_data_root_path }}/block"
 cryptpad_data_path: "{{ cryptpad_data_root_path }}/data"
 cryptpad_files_path: "{{ cryptpad_data_root_path }}/files"

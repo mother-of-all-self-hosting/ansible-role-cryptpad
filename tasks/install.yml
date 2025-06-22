@@ -14,7 +14,6 @@
   with_items:
     - "{{ cryptpad_base_path }}"
     - "{{ cryptpad_data_root_path }}"
-    - "{{ cryptpad_config_path }}"
     - "{{ cryptpad_customize_path }}"
     - "{{ cryptpad_block_path }}"
     - "{{ cryptpad_data_path }}"
@@ -31,15 +30,6 @@
   with_items:
     - env
     - labels
-
-- name: Ensure CryptPad configuration is installed
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/{{ item }}.j2"
-    dest: "{{ cryptpad_config_path }}/{{ item }}"
-    mode: 0640
-    owner: "{{ cryptpad_uid }}"
-    group: "{{ cryptpad_gid }}"
-  with_items:
     - config.js
 
 - name: Ensure CryptPad image is pulled
