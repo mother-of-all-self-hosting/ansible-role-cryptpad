@@ -60,11 +60,6 @@
   when: "cryptpad_container_image_self_build | bool"
 
 
-- name: Ensure cryptpad.service installed
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/systemd/cryptpad.service.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ cryptpad_identifier }}.service"
-    mode: 0644
 
 
 - name: Ensure CryptPad container network is created
@@ -74,6 +69,6 @@
 
 - name: Ensure CryptPad systemd service is present
   ansible.builtin.template:
-    mode: 0755
     src: "{{ role_path }}/templates/systemd/cryptpad.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ cryptpad_identifier }}.service"
+    mode: "0644"
