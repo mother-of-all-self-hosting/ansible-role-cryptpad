@@ -3,7 +3,7 @@ galaxy_info:
   company: Hyteck
   role_name: cryptpad
   namespace: moanos
-  description: Gather - Organize - Mobilize, a role to install a CryptPad server that allows you to share events via ActivityPub
+  description: CryptPad
   platforms:
     - name: Debian
       versions:
