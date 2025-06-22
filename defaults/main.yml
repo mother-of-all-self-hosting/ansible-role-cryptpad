@@ -206,5 +206,8 @@ cryptpad_floc_optout_enabled: true
 #   another.label="here"
 cryptpad_container_labels_additional_labels: ''
 
-# List of systemd services that cryptpad.service depends on
-cryptpad_systemd_required_services_list: ['docker.service']
+# List of systemd services that the CryptPad systemd service depends on
+cryptpad_systemd_required_services_list: "{{ cryptpad_systemd_required_services_list_default + cryptpad_systemd_required_services_list_auto + cryptpad_systemd_required_services_list_custom }}"
+cryptpad_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+cryptpad_systemd_required_services_list_auto: []
+cryptpad_systemd_required_services_list_custom: []
