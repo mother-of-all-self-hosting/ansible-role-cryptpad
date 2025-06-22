@@ -29,10 +29,11 @@ cryptpad_main_hostname: ''
 # CryptPad sandbox subdomain FQDN
 cryptpad_sandbox_hostname: ''
 
-cryptpad_container_image: "{{ cryptpad_container_image_registry_prefix }}{{ cryptpad_container_image_name }}"
-cryptpad_container_image_name: "cryptpad/cryptpad:{{ cryptpad_container_image_tag }}"
-cryptpad_container_image_registry_prefix: docker.io/
+cryptpad_container_image: "{{ cryptpad_container_image_registry_prefix }}cryptpad/cryptpad:{{ cryptpad_container_image_tag }}"
 cryptpad_container_image_tag: "version-{{ cryptpad_version }}"
+cryptpad_container_image_registry_prefix: "{{ cryptpad_container_image_registry_prefix_upstream }}"
+cryptpad_container_image_registry_prefix_upstream: "{{ cryptpad_container_image_registry_prefix_upstream_default }}"
+cryptpad_container_image_registry_prefix_upstream_default: docker.io/
 cryptpad_container_image_force_pull: "{{ cryptpad_container_image.endswith(':latest') }}"
 
 cryptpad_container_image_self_build: false
