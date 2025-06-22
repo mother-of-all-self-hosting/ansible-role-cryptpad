@@ -19,7 +19,7 @@ cryptpad_files_path: "{{ cryptpad_data_root_path }}/files"
 cryptpad_blob_path: "{{ cryptpad_data_root_path }}/blob"
 
 # renovate: datasource=docker depName=cryptpad/cryptpad
-cryptpad_version: 2024.12.0
+cryptpad_version: release-2024.12.0
 
 cryptpad_uid: ''
 cryptpad_gid: ''
@@ -31,7 +31,7 @@ cryptpad_main_hostname: ''
 cryptpad_sandbox_hostname: ''
 
 cryptpad_container_image: "{{ cryptpad_container_image_registry_prefix }}cryptpad/cryptpad:{{ cryptpad_container_image_tag }}"
-cryptpad_container_image_tag: "version-{{ cryptpad_version }}"
+cryptpad_container_image_tag: "{{ cryptpad_version }}"
 cryptpad_container_image_registry_prefix: "{{ cryptpad_container_image_registry_prefix_upstream }}"
 cryptpad_container_image_registry_prefix_upstream: "{{ cryptpad_container_image_registry_prefix_upstream_default }}"
 cryptpad_container_image_registry_prefix_upstream_default: docker.io/
