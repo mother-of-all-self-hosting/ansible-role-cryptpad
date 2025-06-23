@@ -1,4 +1,6 @@
 # SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
+# SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -9,7 +11,8 @@
     path: "{{ devture_systemd_docker_base_systemd_path }}/{{ cryptpad_identifier }}.service"
   register: cryptpad_service_stat
 
-- when: cryptpad_service_stat.stat.exists | bool
+- name: Uninstall CryptPad systemd services and files
+  when: cryptpad_service_stat.stat.exists | bool
   block:
     - name: Ensure CryptPad systemd service is stopped
       ansible.builtin.service:
@@ -23,7 +26,7 @@
         path: "{{ devture_systemd_docker_base_systemd_path }}/{{ cryptpad_identifier }}.service"
         state: absent
 
-    - name: Ensure CryptPad path doesn't exist
+    - name: Ensure CryptPad path does not exist
       ansible.builtin.file:
         path: "{{ cryptpad_base_path }}"
         state: absent
