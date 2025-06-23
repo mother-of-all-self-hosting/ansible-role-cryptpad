@@ -16,7 +16,8 @@
     - cryptpad_main_hostname
     - cryptpad_sandbox_hostname
 
-- when: cryptpad_container_labels_traefik_enabled | bool
+- name: Run if Traefik is enabled
+  when: cryptpad_container_labels_traefik_enabled | bool
   block:
     - name: Fail if required CryptPad Traefik settings not defined
       ansible.builtin.fail:
@@ -24,5 +25,5 @@
           You need to define a required configuration setting (`{{ item }}`).
       when: "vars[item] == ''"
       with_items:
-        - cryptpad_main_hostname
-        - cryptpad_sandbox_hostname
+        - cryptpad_main_container_labels_traefik_hostname
+        - cryptpad_sandbox_container_labels_traefik_hostname
