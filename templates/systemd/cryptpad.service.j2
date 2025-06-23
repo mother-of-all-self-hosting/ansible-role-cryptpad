@@ -11,6 +11,9 @@ Description=CryptPad ({{ cryptpad_identifier }})
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
+{% for service in cryptpad_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
 DefaultDependencies=no
 
 [Service]
