@@ -1,24 +1,28 @@
 # SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
+# SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-
-- block:
-    - when: cryptpad_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
-
-    - when: cryptpad_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+- name: Perform CryptPad installation tasks
+  when: cryptpad_enabled | bool
   tags:
     - setup-all
     - setup-cryptpad
     - install-all
     - install-cryptpad
+  block:
+    - name: Validate CryptPad configuration
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+    - name: Install CryptPad
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
 
-- block:
-    - when: not cryptpad_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
+- name: Perform CryptPad uninstallation tasks
+  when: not cryptpad_enabled | bool
   tags:
     - setup-all
     - setup-cryptpad
+  block:
+    - name: Uninstall CryptPad
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
