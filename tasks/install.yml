@@ -5,12 +5,11 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-
 - name: Ensure CryptPad paths exist
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    mode: 0750
+    mode: "0750"
     owner: "{{ cryptpad_uid }}"
     group: "{{ cryptpad_gid }}"
   with_items:
@@ -26,7 +25,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ cryptpad_base_path }}/{{ item }}"
-    mode: 0640
+    mode: "0640"
     owner: "{{ cryptpad_uid }}"
     group: "{{ cryptpad_gid }}"
   with_items:
@@ -81,9 +80,6 @@
           path: "{{ cryptpad_container_image_self_build_src_files_path }}"
           pull: true
           args:
-
-
-
 
 - name: Ensure CryptPad container network is created via community.docker.docker_network
   when: devture_systemd_docker_base_container_network_creation_method == 'ansible-module'
