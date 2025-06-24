@@ -140,15 +140,25 @@ cryptpad_maximum_upload_size: 20
 # Additional environment variables.
 cryptpad_environment_variables_additional_variables: ''
 
-###########
-# SANDBOX #
-###########
+########################################################################
+#                                                                      #
+# sandbox                                                              #
+#                                                                      #
+########################################################################
 
 cryptpad_sandbox_container_labels_traefik_hostname: "{{ cryptpad_sandbox_hostname }}"
 
-########
-# MAIN #
-########
+########################################################################
+#                                                                      #
+# /sandbox                                                             #
+#                                                                      #
+########################################################################
+
+########################################################################
+#                                                                      #
+# main                                                                 #
+#                                                                      #
+########################################################################
 
 cryptpad_main_container_labels_traefik_hostname: "{{ cryptpad_main_hostname }}"
 cryptpad_main_container_labels_traefik_rule: "Host(`{{ cryptpad_main_container_labels_traefik_hostname }}`) || Host(`{{ cryptpad_sandbox_container_labels_traefik_hostname }}`)"
@@ -223,3 +233,9 @@ cryptpad_main_http_header_strict_transport_security: "max-age=31536000; includeS
 # - https://hstspreload.org/#opt-in
 # See: `cryptpad_http_header_strict_transport_security`
 cryptpad_main_hsts_preload_enabled: false
+
+########################################################################
+#                                                                      #
+# /main                                                                #
+#                                                                      #
+########################################################################
