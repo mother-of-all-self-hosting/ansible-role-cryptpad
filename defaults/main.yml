@@ -168,7 +168,7 @@ cryptpad_main_container_labels_traefik_tls: "{{ cryptpad_main_container_labels_t
 cryptpad_main_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
 # Controls which additional headers to attach to all HTTP requests.
-# To add your own custom request headers, use `cryptpad_main_container_labels_traefik_additional_response_headers_custom`
+# To add your own custom request headers, use `cryptpad_main_container_labels_traefik_additional_request_headers_custom`
 cryptpad_main_container_labels_traefik_additional_request_headers: "{{ cryptpad_main_container_labels_traefik_additional_request_headers_auto | combine(cryptpad_main_container_labels_traefik_additional_request_headers_custom) }}"
 cryptpad_main_container_labels_traefik_additional_request_headers_auto: {}
 cryptpad_main_container_labels_traefik_additional_request_headers_custom: {}
