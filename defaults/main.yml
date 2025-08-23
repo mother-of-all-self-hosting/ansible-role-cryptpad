@@ -116,7 +116,10 @@ cryptpad_systemd_required_services_list_auto: []
 cryptpad_systemd_required_services_list_custom: []
 
 # List of systemd services that the CryptPad systemd service wants
-cryptpad_systemd_wanted_services_list: []
+cryptpad_systemd_wanted_services_list: "{{ cryptpad_systemd_wanted_services_list_default + cryptpad_systemd_wanted_services_list_auto + cryptpad_systemd_wanted_services_list_custom }}"
+cryptpad_systemd_wanted_services_list_default: []
+cryptpad_systemd_wanted_services_list_auto: []
+cryptpad_systemd_wanted_services_list_custom: []
 
 # CryptPad contains an administration panel. Its access is restricted to specific users, identified by their public signing
 # key, which can be found on the settings page for registered users.
