@@ -106,7 +106,7 @@ cryptpad_container_health_interval: "{{ '5s' if cryptpad_container_labels_traefi
 # - https://amifloced.org/
 #
 # Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
-# See: `cryptpad_content_permission_policy`
+# See: `cryptpad_http_header_permissions_policy`
 cryptpad_floc_optout_enabled: true
 
 # List of systemd services that the CryptPad systemd service depends on
@@ -187,7 +187,7 @@ cryptpad_main_container_labels_traefik_additional_response_headers_auto: |
     | combine ({'X-XSS-Protection': cryptpad_main_http_header_xss_protection} if cryptpad_main_http_header_xss_protection else {})
     | combine ({'X-Content-Type-Options': cryptpad_main_http_header_content_type_options} if cryptpad_main_http_header_content_type_options else {})
     | combine ({'Content-Security-Policy': cryptpad_main_http_header_content_security_policy} if cryptpad_main_http_header_content_security_policy else {})
-    | combine ({'Permission-Policy': cryptpad_main_http_header_content_permission_policy} if cryptpad_main_http_header_content_permission_policy else {})
+    | combine ({'Permissions-Policy': cryptpad_main_http_header_permissions_policy} if cryptpad_main_http_header_permissions_policy else {})
     | combine ({'Strict-Transport-Security': cryptpad_main_http_header_strict_transport_security} if cryptpad_main_http_header_strict_transport_security and cryptpad_main_container_labels_traefik_tls else {})
   }}
 cryptpad_main_container_labels_traefik_additional_response_headers_custom: {}
@@ -219,9 +219,9 @@ cryptpad_main_http_header_content_security_policy: >
   frame-ancestors 'self' https://{{ cryptpad_main_hostname }};
   worker-src 'self';"
 
-# Specifies the value of the `Permission-Policy` header.
-# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
-cryptpad_main_http_header_content_permission_policy: "{{ 'interest-cohort=()' if cryptpad_floc_optout_enabled else '' }}"
+# Specifies the value of the `Permissions-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy
+cryptpad_main_http_header_permissions_policy: "{{ 'interest-cohort=()' if cryptpad_floc_optout_enabled else '' }}"
 
 # Specifies the value of the `Strict-Transport-Security` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
