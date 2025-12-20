@@ -23,6 +23,7 @@
     - cryptpad_gid
     - cryptpad_main_hostname
     - cryptpad_sandbox_hostname
+    - cryptpad_container_network
 
 - name: Run if Traefik is enabled
   when: cryptpad_container_labels_traefik_enabled | bool
