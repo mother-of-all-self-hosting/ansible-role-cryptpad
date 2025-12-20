@@ -82,7 +82,9 @@ cryptpad_container_labels_traefik_docker_network: "{{ cryptpad_container_network
 # cryptpad_container_labels_additional_labels: |
 #   my.label=1
 #   another.label="here"
-cryptpad_container_labels_additional_labels: ''
+cryptpad_container_labels_additional_labels: "{{ cryptpad_container_labels_additional_labels_auto | combine(cryptpad_container_labels_additional_labels_custom) }}"
+cryptpad_container_labels_additional_labels_auto: {}
+cryptpad_container_labels_additional_labels_custom: {}
 
 # A list of extra arguments to pass to the container
 cryptpad_container_extra_arguments: "{{ cryptpad_container_extra_arguments_auto + cryptpad_container_extra_arguments_custom }}"
