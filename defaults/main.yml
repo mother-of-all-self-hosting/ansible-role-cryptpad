@@ -142,6 +142,9 @@ cryptpad_default_storage_limit: 50
 # The maximus size of files uploaded to the server in MB
 cryptpad_maximum_upload_size: 20
 
+# Specify the timezone
+cryptpad_environment_variables_tz: UTC
+
 # Additional environment variables.
 cryptpad_environment_variables_additional_variables: ''
 
