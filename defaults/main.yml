@@ -87,7 +87,7 @@ cryptpad_container_labels_additional_labels: "{{ cryptpad_container_labels_addit
 cryptpad_container_labels_additional_labels_auto: {}
 cryptpad_container_labels_additional_labels_custom: {}
 
-# A list of extra arguments to pass to the container
+# A list of extra arguments to pass to the container (`docker create` command)
 cryptpad_container_extra_arguments: "{{ cryptpad_container_extra_arguments_auto + cryptpad_container_extra_arguments_custom }}"
 cryptpad_container_extra_arguments_auto: []
 cryptpad_container_extra_arguments_custom: []
