@@ -21,14 +21,14 @@ cryptpad_blob_path: "{{ cryptpad_data_root_path }}/blob"
 # renovate: datasource=docker depName=cryptpad/cryptpad
 cryptpad_version: version-2025.6.0
 
-cryptpad_uid: ''
-cryptpad_gid: ''
+cryptpad_uid: ""
+cryptpad_gid: ""
 
 # CryptPad main domain FQDN
-cryptpad_main_hostname: ''
+cryptpad_main_hostname: ""
 
 # CryptPad sandbox subdomain FQDN
-cryptpad_sandbox_hostname: ''
+cryptpad_sandbox_hostname: ""
 
 cryptpad_container_image: "{{ cryptpad_container_image_registry_prefix }}cryptpad/cryptpad:{{ cryptpad_container_image_tag }}"
 cryptpad_container_image_tag: "{{ cryptpad_version }}"
@@ -151,7 +151,7 @@ cryptpad_maximum_upload_size: 20
 cryptpad_environment_variables_tz: UTC
 
 # Additional environment variables.
-cryptpad_environment_variables_additional_variables: ''
+cryptpad_environment_variables_additional_variables: ""
 
 ########################################################################
 #                                                                      #
