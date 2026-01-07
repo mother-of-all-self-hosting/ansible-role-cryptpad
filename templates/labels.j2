@@ -47,4 +47,6 @@ traefik.http.services.{{ cryptpad_identifier }}-main.loadbalancer.server.port={{
 
 {% endif %}
 
-{{ cryptpad_container_labels_additional_labels }}
+{% for arg in cryptpad_container_labels_additional_labels %}
+{{ arg }}
+{% endfor %}
