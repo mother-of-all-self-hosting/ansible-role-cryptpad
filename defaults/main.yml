@@ -80,7 +80,7 @@ cryptpad_container_labels_traefik_docker_network: "{{ cryptpad_container_network
 # To add your own custom labels, use `cryptpad_container_labels_additional_labels_custom`
 #
 # Example:
-# cryptpad_container_labels_additional_labels_custom: |
+# cryptpad_container_labels_additional_labels_custom:
 #   - my.label=1
 #   - another.label="here"
 cryptpad_container_labels_additional_labels: "{{ cryptpad_container_labels_additional_labels_auto + cryptpad_container_labels_additional_labels_custom }}"
