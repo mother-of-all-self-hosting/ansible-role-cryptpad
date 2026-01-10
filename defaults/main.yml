@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
 # SPDX-FileCopyrightText: 2024 neokyx
-# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+# SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -214,18 +214,9 @@ cryptpad_main_http_header_content_type_options: nosniff
 
 # Specifies the value of the `Content-Security-Policy` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
-cryptpad_main_http_header_content_security_policy: >
-  default-src 'none';
-  style-src 'unsafe-inline' 'self' https://{{ cryptpad_main_hostname }};
-  font-src 'self' data: https://{{ cryptpad_main_hostname }};
-  child-src https://{{ cryptpad_main_hostname }};
-  frame-src 'self' blob: https://{{ cryptpad_sandbox_hostname }};
-  script-src 'self' resource: https://{{ cryptpad_main_hostname }};
-  connect-src 'self' blob: https://{{ cryptpad_main_hostname }} https://{{ cryptpad_sandbox_hostname }} wss://{{ cryptpad_main_hostname }};
-  img-src 'self' data: blob: https://{{ cryptpad_main_hostname }};
-  media-src blob:;
-  frame-ancestors 'self' https://{{ cryptpad_main_hostname }};
-  worker-src 'self';"
+#
+# Note: the value is specified automatically by the instance, so it is not necessary to populate the variable.
+cryptpad_main_http_header_content_security_policy: ""
 
 # Specifies the value of the `Permissions-Policy` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy
