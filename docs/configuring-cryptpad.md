@@ -20,12 +20,9 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 This is an [Ansible](https://www.ansible.com/) role which installs [CryptPad](https://github.com/cryptpad/cryptpad) to run as a [Docker](https://www.docker.com/) container wrapped in a systemd service.
 
-CryptPad is a web application encrypting or splitting secrets for printing them as QR codes on sheets of paper for later recovery with JavaScript. The application can also work offline on a web browser.
+CryptPad is a free and open-source collaboration suite that is end-to-end encrypted.
 
-See the project's [documentation](https://github.com/cryptpad/cryptpad/blob/main/README.md) to learn what CryptPad does and why it might be useful to you.
-
->[!NOTE]
-> The role is configured to build the Docker image by default, as it is not provided by the upstream project. Before proceeding, make sure that the machine which you are going to run the Ansible commands against has sufficient computing power to build it.
+See the project's [documentation](https://docs.cryptpad.org) to learn what CryptPad does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 
@@ -49,15 +46,17 @@ cryptpad_enabled: true
 ########################################################################
 ```
 
-### Set the hostname
+### Set the hostnames
 
-To enable CryptPad you need to set the hostname as well. To do so, add the following configuration to your `vars.yml` file. Make sure to replace `example.com` with your own value.
+To enable CryptPad you need to set the hostnames as well. As CryptPad requires two hostnames as described on [this section](https://docs.cryptpad.org/en/admin_guide/installation.html#admin-domain-config) of the documentation, add the following configuration to your `vars.yml` file for each of them. Make sure to replace them with your own value.
 
 ```yaml
-cryptpad_hostname: "example.com"
+cryptpad_main_hostname: "main.example.com"
+
+cryptpad_sandbox_hostname: "sandbox.example.com"
 ```
 
-After adjusting the hostname, make sure to adjust your DNS records to point the domain to your server.
+After adjusting the hostnames, make sure to adjust your DNS records to point them to your server.
 
 ### Extending the configuration
 
@@ -66,6 +65,8 @@ There are some additional things you may wish to configure about the component.
 Take a look at:
 
 - [`defaults/main.yml`](../defaults/main.yml) for some variables that you can customize via your `vars.yml` file.
+
+See [`config.example.js`](https://github.com/cryptpad/cryptpad/blob/main/config/config.example.js) for a complete list of the server's config options.
 
 ## Installing
 
@@ -79,7 +80,15 @@ If you use the MASH playbook, the shortcut commands with the [`just` program](ht
 
 ## Usage
 
-After running the command for installation, CryptPad becomes available at the specified hostname like `https://example.com`.
+After running the command for installation, CryptPad becomes available at the specified hostname like `https://main.example.com`.
+
+To get started, run the command below to output the URL for creating a first administrator account:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=get-installation-url-cryptpad
+```
+
+After running the command, open the URL with a web browser, and follow the set up wizard.
 
 ## Troubleshooting
 
