@@ -18,6 +18,14 @@
     - name: Install CryptPad
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
 
+- name: Perform CryptPad installation link retrieval tasks
+  when: cryptpad_enabled | bool
+  tags:
+    - get-installation-url-cryptpad
+  block:
+    - name: Extract URL for CryptPad installation
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/get_installation_url.yml"
+
 - name: Perform CryptPad uninstallation tasks
   when: not cryptpad_enabled | bool
   tags:

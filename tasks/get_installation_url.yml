@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
+# SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# The command for extracting the installation URL: ansible-playbook -i inventory/hosts setup.yml --tags=get-installation-url-cryptpad
+
+- name: Ensure journalctl logs of CryptPad are retrieved
+  ansible.builtin.command: journalctl -u {{ cryptpad_identifier }}
+  register: extracted_cryptpad_journal_logs
+  changed_when: extracted_cryptpad_journal_logs.rc == 0
+  failed_when: false
+
+- name: Extract all URLs for CryptPad installation from the journalctl logs
+  ansible.builtin.set_fact:
+    extracted_cryptpad_installation_urls: "{{ extracted_cryptpad_journal_logs.stdout | regex_findall('https?://[^ ]+/install/#\\w+') }}"
+
+- name: Get the newest installation URL
+  ansible.builtin.set_fact:
+    extracted_cryptpad_installation_url_last: "{{ extracted_cryptpad_installation_urls | last }}"
+
+- name: Display the extracted URL for CryptPad installation
+  ansible.builtin.set_fact:
+    devture_playbook_runtime_messages_list: |
+      {{
+        devture_playbook_runtime_messages_list | default([])
+        +
+        [
+          "Open this URL on a web browser to create your first administrator account: " + extracted_cryptpad_installation_url_last
+        ]
+      }}
