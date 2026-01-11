@@ -3,7 +3,7 @@ galaxy_info:
   author: Julian-Samuel Gebühr
   company: Hyteck
   role_name: cryptpad
-  namespace: moanos
+  namespace: mash
   description: CryptPad
   platforms:
     - name: Debian
