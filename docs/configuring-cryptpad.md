@@ -1,60 +1,60 @@
 <!--
-SPDX-FileCopyrightText: 2020 - 2024 MDAD project contributors
-SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
 SPDX-FileCopyrightText: 2020 Aaron Raimist
 SPDX-FileCopyrightText: 2020 Chris van Dijk
 SPDX-FileCopyrightText: 2020 Dominik Zajac
 SPDX-FileCopyrightText: 2020 Mickaël Cornière
+SPDX-FileCopyrightText: 2020-2024 MDAD project contributors
+SPDX-FileCopyrightText: 2020-2024 Slavi Pantaleev
 SPDX-FileCopyrightText: 2022 François Darveau
 SPDX-FileCopyrightText: 2022 Julian Foad
 SPDX-FileCopyrightText: 2022 Warren Bailey
 SPDX-FileCopyrightText: 2023 Antonis Christofides
 SPDX-FileCopyrightText: 2023 Felix Stupp
 SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
-SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024-2026 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
-# Setting up OrigamiVault
+# Setting up CryptPad
 
-This is an [Ansible](https://www.ansible.com/) role which installs [OrigamiVault](https://github.com/origamivault/origamivault) to run as a [Docker](https://www.docker.com/) container wrapped in a systemd service.
+This is an [Ansible](https://www.ansible.com/) role which installs [CryptPad](https://github.com/cryptpad/cryptpad) to run as a [Docker](https://www.docker.com/) container wrapped in a systemd service.
 
-OrigamiVault is a web application encrypting or splitting secrets for printing them as QR codes on sheets of paper for later recovery with JavaScript. The application can also work offline on a web browser.
+CryptPad is a web application encrypting or splitting secrets for printing them as QR codes on sheets of paper for later recovery with JavaScript. The application can also work offline on a web browser.
 
-See the project's [documentation](https://github.com/origamivault/origamivault/blob/main/README.md) to learn what OrigamiVault does and why it might be useful to you.
+See the project's [documentation](https://github.com/cryptpad/cryptpad/blob/main/README.md) to learn what CryptPad does and why it might be useful to you.
 
 >[!NOTE]
 > The role is configured to build the Docker image by default, as it is not provided by the upstream project. Before proceeding, make sure that the machine which you are going to run the Ansible commands against has sufficient computing power to build it.
 
 ## Adjusting the playbook configuration
 
-To enable OrigamiVault with this role, add the following configuration to your `vars.yml` file.
+To enable CryptPad with this role, add the following configuration to your `vars.yml` file.
 
 **Note**: the path should be something like `inventory/host_vars/mash.example.com/vars.yml` if you use the [MASH Ansible playbook](https://github.com/mother-of-all-self-hosting/mash-playbook).
 
 ```yaml
 ########################################################################
 #                                                                      #
-# origamivault                                                         #
+# cryptpad                                                             #
 #                                                                      #
 ########################################################################
 
-origamivault_enabled: true
+cryptpad_enabled: true
 
 ########################################################################
 #                                                                      #
-# /origamivault                                                        #
+# /cryptpad                                                            #
 #                                                                      #
 ########################################################################
 ```
 
 ### Set the hostname
 
-To enable OrigamiVault you need to set the hostname as well. To do so, add the following configuration to your `vars.yml` file. Make sure to replace `example.com` with your own value.
+To enable CryptPad you need to set the hostname as well. To do so, add the following configuration to your `vars.yml` file. Make sure to replace `example.com` with your own value.
 
 ```yaml
-origamivault_hostname: "example.com"
+cryptpad_hostname: "example.com"
 ```
 
 After adjusting the hostname, make sure to adjust your DNS records to point the domain to your server.
@@ -79,10 +79,10 @@ If you use the MASH playbook, the shortcut commands with the [`just` program](ht
 
 ## Usage
 
-After running the command for installation, OrigamiVault becomes available at the specified hostname like `https://example.com`.
+After running the command for installation, CryptPad becomes available at the specified hostname like `https://example.com`.
 
 ## Troubleshooting
 
 ### Check the service's logs
 
-You can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu origamivault` (or how you/your playbook named the service, e.g. `mash-origamivault`).
+You can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu cryptpad` (or how you/your playbook named the service, e.g. `mash-cryptpad`).
