@@ -108,17 +108,6 @@ cryptpad_container_extra_arguments_custom: []
 # For non-Traefik setups, we use the default healthcheck interval (60s) to decrease overhead.
 cryptpad_container_health_interval: "{{ '5s' if cryptpad_container_labels_traefik_enabled else '60s' }}"
 
-# Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
-#
-# Learn more about what it is here:
-# - https://www.eff.org/deeplinks/2021/03/googles-floc-terrible-idea
-# - https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network
-# - https://amifloced.org/
-#
-# Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
-# See: `cryptpad_http_header_permissions_policy`
-cryptpad_floc_optout_enabled: true
-
 # List of systemd services that the CryptPad systemd service depends on
 cryptpad_systemd_required_services_list: "{{ cryptpad_systemd_required_services_list_default + cryptpad_systemd_required_services_list_auto + cryptpad_systemd_required_services_list_custom }}"
 cryptpad_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
@@ -156,20 +145,6 @@ cryptpad_environment_variables_tz: UTC
 
 # Additional environment variables.
 cryptpad_environment_variables_additional_variables: ""
-
-########################################################################
-#                                                                      #
-# sandbox                                                              #
-#                                                                      #
-########################################################################
-
-cryptpad_sandbox_container_labels_traefik_hostname: "{{ cryptpad_sandbox_hostname }}"
-
-########################################################################
-#                                                                      #
-# /sandbox                                                             #
-#                                                                      #
-########################################################################
 
 ########################################################################
 #                                                                      #
@@ -230,6 +205,17 @@ cryptpad_main_http_header_permissions_policy: "{{ 'interest-cohort=()' if cryptp
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
 cryptpad_main_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if cryptpad_main_hsts_preload_enabled else '' }}"
 
+# Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
+#
+# Learn more about what it is here:
+# - https://www.eff.org/deeplinks/2021/03/googles-floc-terrible-idea
+# - https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network
+# - https://amifloced.org/
+#
+# Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
+# See: `cryptpad_http_header_permissions_policy`
+cryptpad_floc_optout_enabled: true
+
 # Controls if HSTS preloading is enabled
 #
 # In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
@@ -245,5 +231,19 @@ cryptpad_main_hsts_preload_enabled: false
 ########################################################################
 #                                                                      #
 # /main                                                                #
+#                                                                      #
+########################################################################
+
+########################################################################
+#                                                                      #
+# sandbox                                                              #
+#                                                                      #
+########################################################################
+
+cryptpad_sandbox_container_labels_traefik_hostname: "{{ cryptpad_sandbox_hostname }}"
+
+########################################################################
+#                                                                      #
+# /sandbox                                                             #
 #                                                                      #
 ########################################################################
