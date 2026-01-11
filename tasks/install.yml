@@ -29,9 +29,9 @@
     owner: "{{ cryptpad_uid }}"
     group: "{{ cryptpad_gid }}"
   with_items:
+    - config.js
     - env
     - labels
-    - config.js
 
 - name: Run if self-building of CryptPad container image is not enabled
   when: "not cryptpad_container_image_self_build | bool"

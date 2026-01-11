@@ -30,6 +30,7 @@
         path: "{{ cryptpad_base_path }}/{{ item }}"
         state: absent
       with_items:
+        - config.js
         - env
         - labels
 
