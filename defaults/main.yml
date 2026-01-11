@@ -189,14 +189,13 @@ cryptpad_systemd_wanted_services_list_default: []
 cryptpad_systemd_wanted_services_list_auto: []
 cryptpad_systemd_wanted_services_list_custom: []
 
-# CryptPad contains an administration panel. Its access is restricted to specific users, identified by their public signing
-# key, which can be found on the settings page for registered users.
-# cryptpad_config_admin_keys:
+# Specify public signing keys of user accounts to allow them to access to the administration panel.
+# Example:
 #  - "[cryptpad-user1@example.org/YZgXQxKR0Rcb6r6CmxHPdAGLVludrAF2lEnkbx1vVOo=]"
 #  - "[cryptpad-user2@example.org/YZgXXXXXXXXXXXXXXXXXXAGLVludrAF2lEnkbx1vVYY=]"
 cryptpad_config_admin_keys: []
 
-# Specify how much computing power CryptPad can take
+# Specify how much child processes to be available for the CryptPad instance
 cryptpad_config_max_workers: 4
 
 # Control if the CryptPad instance logs activity to stdout
@@ -221,7 +220,7 @@ cryptpad_environment_variables_additional_variables: ""
 #                                                                      #
 ########################################################################
 
-# Port that the container will use for the web interface
+# The port number in the container
 cryptpad_main_container_port: 3000
 
 cryptpad_main_container_labels_traefik_hostname: "{{ cryptpad_main_hostname }}"
@@ -238,7 +237,7 @@ cryptpad_main_container_labels_traefik_hostname: "{{ cryptpad_main_hostname }}"
 #                                                                      #
 ########################################################################
 
-# Port that the container will use for the web interface
+# The port number in the container for sandbox
 cryptpad_sandbox_container_port: 3001
 
 cryptpad_sandbox_container_labels_traefik_hostname: "{{ cryptpad_sandbox_hostname }}"
