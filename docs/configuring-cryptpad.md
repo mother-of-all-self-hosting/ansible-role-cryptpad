@@ -18,7 +18,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 # Setting up CryptPad
 
-This is an [Ansible](https://www.ansible.com/) role which installs [CryptPad](https://github.com/cryptpad/cryptpad) to run as a [Docker](https://www.docker.com/) container wrapped in a systemd service.
+This is an [Ansible](https://www.ansible.com/) role which installs [CryptPad](https://cryptpad.org) to run as a [Docker](https://www.docker.com/) container wrapped in a systemd service.
 
 CryptPad is a free and open-source collaboration suite that is end-to-end encrypted.
 

@@ -9,7 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 [![REUSE status](https://api.reuse.software/badge/github.com/mother-of-all-self-hosting/ansible-role-cryptpad)](https://api.reuse.software/info/github.com/mother-of-all-self-hosting/ansible-role-cryptpad)
 
-This is an [Ansible](https://www.ansible.com/) role which installs [CryptPad](https://cryptpad.org/) to run as a [Docker](https://www.docker.com/) container wrapped in a systemd service.
+This is an [Ansible](https://www.ansible.com/) role which installs [CryptPad](https://cryptpad.org) to run as a [Docker](https://www.docker.com/) container wrapped in a systemd service.
 
 This role *implicitly* depends on:
 
