@@ -1,4 +1,6 @@
 # SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
+# SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -29,6 +31,12 @@
     - cryptpad_main_hostname
     - cryptpad_sandbox_hostname
     - cryptpad_container_network
+
+- name: Fail if CryptPad logging level is invalid
+  ansible.builtin.fail:
+    msg: >-
+      cryptpad_config_log_level must be 'silly', 'verbose', 'debug', 'feedback', 'info', 'warn', or 'error'
+  when: "cryptpad_config_log_level not in ['silly', 'verbose', 'debug', 'feedback', 'info', 'warn', 'error']"
 
 - name: Run if Traefik is enabled
   when: cryptpad_container_labels_traefik_enabled | bool
