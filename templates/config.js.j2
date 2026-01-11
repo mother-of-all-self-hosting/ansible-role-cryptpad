@@ -1,6 +1,7 @@
 {#
 SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
 SPDX-FileCopyrightText: 2023 XWiki CryptPad Team <contact@cryptpad.org> and contributors
+SPDX-FileCopyrightText: 2026 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
@@ -99,7 +100,7 @@ module.exports = {
  *  or you may want to limit how much computing power CryptPad can take.
  *  If so, set 'maxWorkers' to a positive integer.
  */
-    maxWorkers: {{ cryptpad_max_workers }},
+    maxWorkers: {{ cryptpad_config_max_workers }},
 
     /* =====================
      *       Sessions
@@ -156,7 +157,7 @@ module.exports = {
      *
      */
     adminKeys: [
-{% for admin_key in cryptpad_admin_keys %}
+{% for admin_key in cryptpad_config_admin_keys %}
       "{{ admin_key }}",
 {% endfor %}
 
@@ -215,7 +216,7 @@ module.exports = {
      *  anything larger than this size will be rejected
      *  defaults to 20MB if no value is provided
      */
-    maxUploadSize: {{ cryptpad_maximum_upload_size }} * 1024 * 1024,
+    maxUploadSize: {{ cryptpad_config_maximum_upload_size }} * 1024 * 1024,
 
     /*  Users with premium accounts (those with a plan included in their customLimit)
      *  can benefit from an increased upload size limit. By default they are restricted to the same
@@ -285,7 +286,7 @@ module.exports = {
     /*  CryptPad can log activity to stdout
      *  This may be useful for debugging
      */
-    logToStdout: {{ cryptpad_log_to_stdout|to_json }},
+    logToStdout: {{ cryptpad_config_log_to_stdout | to_json }},
 
     /* CryptPad can be configured to log more or less
      * the various settings are listed below by order of importance
@@ -298,7 +299,7 @@ module.exports = {
      *
      * This will affect both logging to the console and the disk.
      */
-    logLevel: '{{ cryptpad_log_level }}',
+    logLevel: '{{ cryptpad_config_log_level }}',
 
     /*  clients can use the /settings/ app to opt out of usage feedback
      *  which informs the server of things like how much each app is being
