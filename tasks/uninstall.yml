@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
 # SPDX-FileCopyrightText: 2023 Slavi Pantaleev
-# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+# SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -25,6 +25,40 @@
         path: "{{ devture_systemd_docker_base_systemd_path }}/{{ cryptpad_identifier }}.service"
         state: absent
 
+    - name: Ensure CryptPad support files do not exist
+      ansible.builtin.file:
+        path: "{{ cryptpad_base_path }}/{{ item }}"
+        state: absent
+      with_items:
+        - env
+        - labels
+
+    - name: Ensure CryptPad image source files path does not exist
+      ansible.builtin.file:
+        path: "{{ cryptpad_container_image_self_build_src_files_path }}"
+        state: absent
+
+    - name: Ensure CryptPad local data path does not exist if empty
+      ansible.builtin.command:
+        cmd: "rmdir {{ cryptpad_data_root_path }}"
+      register: cryptpad_data_root_path_deletion_result
+      changed_when: cryptpad_data_root_path_deletion_result.rc == 0
+      failed_when: false
+
+    - name: Ensure CryptPad local customization data path does not exist if empty
+      ansible.builtin.command:
+        cmd: "rmdir {{ cryptpad_customize_path }}"
+      register: cryptpad_customize_path_deletion_result
+      changed_when: cryptpad_customize_path_deletion_result.rc == 0
+      failed_when: false
+
+    - name: Ensure CryptPad base path does not exist if empty
+      ansible.builtin.command:
+        cmd: "rmdir {{ cryptpad_base_path }}"
+      register: cryptpad_base_path_deletion_result
+      changed_when: cryptpad_base_path_deletion_result.rc == 0
+      failed_when: false
+
     - name: Ensure CryptPad container network does not exist via community.docker.docker_network
       when: devture_systemd_docker_base_container_network_creation_method == 'ansible-module'
       community.docker.docker_network:
@@ -38,9 +72,40 @@
           {{ devture_systemd_docker_base_host_command_docker }} network rm
           {{ cryptpad_container_network }}
       register: network_deletion_result
-      changed_when: cryptpad_container_network in network_deletion_result.stderr
+      changed_when: cryptpad_container_network in network_deletion_result.stdout
 
-    - name: Ensure CryptPad path does not exist
-      ansible.builtin.file:
-        path: "{{ cryptpad_base_path }}"
-        state: absent
+- name: Check existence of CryptPad local customization data path
+  ansible.builtin.stat:
+    path: "{{ cryptpad_customize_path }}"
+  register: cryptpad_customize_path_stat
+
+# We just want to notify the user. Deleting data is too destructive.
+- name: Notify if CryptPad local customization data remains
+  when: cryptpad_customize_path_stat.stat.exists | bool
+  ansible.builtin.set_fact:
+    devture_playbook_runtime_messages_list: |
+      {{
+        devture_playbook_runtime_messages_list | default([])
+        +
+        [
+          "Note: As the local CryptPad instance has been removed, some old data for customization remains in `" + cryptpad_customize_path + "`. Feel free to delete it."
+        ]
+      }}
+
+- name: Check existence of CryptPad local data path
+  ansible.builtin.stat:
+    path: "{{ cryptpad_data_root_path }}"
+  register: cryptpad_data_root_path_stat
+
+# We just want to notify the user. Deleting data is too destructive.
+- name: Notify if CryptPad local data remains
+  when: cryptpad_data_root_path_stat.stat.exists | bool
+  ansible.builtin.set_fact:
+    devture_playbook_runtime_messages_list: |
+      {{
+        devture_playbook_runtime_messages_list | default([])
+        +
+        [
+          "Note: As the local CryptPad instance has been removed, some old data remains in `" + cryptpad_data_root_path + "`. Feel free to delete it."
+        ]
+      }}
