@@ -15,7 +15,7 @@ This role *implicitly* depends on:
 
 - [`com.devture.ansible.role.systemd_docker_base`](https://github.com/devture/com.devture.ansible.role.systemd_docker_base)
 
-Check [`defaults/main.yml`](defaults/main.yml) for the full list of supported options.
+Check [`defaults/main.yml`](defaults/main.yml) for the full list of supported options. Refer to [this page](docs/configuring-cryptpad.md) for details about setting up the service with this role.
 
 ## Development
 
