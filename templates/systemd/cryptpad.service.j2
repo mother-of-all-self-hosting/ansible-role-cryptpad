@@ -1,5 +1,7 @@
 {#
 SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 Nikita Chernyi
 SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
@@ -42,6 +44,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       --mount type=bind,src={{ cryptpad_customize_path }},dst=/cryptpad/customize \
       --mount type=bind,src={{ cryptpad_data_path }},dst=/cryptpad/data \
       --mount type=bind,src={{ cryptpad_files_path }},dst=/cryptpad/datastore \
+      {% for volume in cryptpad_container_additional_volumes %}
+      --mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options else '' }} \
+      {% endfor %}
       --tmpfs=/.npm:rw,noexec,nosuid,size=100m \
       --tmpfs=/tmp:rw,noexec,nosuid,size=100m \
       {% for arg in cryptpad_container_extra_arguments %}
