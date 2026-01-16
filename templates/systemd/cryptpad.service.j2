@@ -54,7 +54,6 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       {% endfor %}
       {{ cryptpad_container_image_self_build_name if cryptpad_container_image_self_build else cryptpad_container_image }}
 
-
 {% for network in cryptpad_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ cryptpad_identifier }}
 {% endfor %}
