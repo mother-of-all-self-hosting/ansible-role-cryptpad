@@ -112,6 +112,12 @@ cryptpad_container_labels_additional_labels: "{{ cryptpad_container_labels_addit
 cryptpad_container_labels_additional_labels_auto: []
 cryptpad_container_labels_additional_labels_custom: []
 
+# Specify the size of the container's tmpfs volume (.npm)
+cryptpad_container_tmpfs_dotnpm_size: 128m
+
+# Specify the size of the container's tmpfs volume (tmp)
+cryptpad_container_tmpfs_tmp_size: 128m
+
 # A list of extra arguments to pass to the container (`docker create` command)
 cryptpad_container_extra_arguments: "{{ cryptpad_container_extra_arguments_auto + cryptpad_container_extra_arguments_custom }}"
 cryptpad_container_extra_arguments_auto: []
