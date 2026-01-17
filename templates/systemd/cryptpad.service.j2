@@ -38,7 +38,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       --env-file={{ cryptpad_base_path }}/env \
       --label-file={{ cryptpad_base_path }}/labels \
       --health-interval={{ cryptpad_container_health_interval }} \
-      --mount type=bind,src={{ cryptpad_base_path }}/config.js,dst=/cryptpad/config/config.js,readonly \
+      --mount type=bind,src={{ cryptpad_base_path }}/config.js,dst=/cryptpad/config/config.js,ro \
       --mount type=bind,src={{ cryptpad_blob_path }},dst=/cryptpad/blob \
       --mount type=bind,src={{ cryptpad_block_path }},dst=/cryptpad/block \
       --mount type=bind,src={{ cryptpad_customize_path }},dst=/cryptpad/customize \
