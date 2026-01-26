@@ -24,12 +24,6 @@ cryptpad_version: version-2025.9.0
 cryptpad_uid: ""
 cryptpad_gid: ""
 
-# The hostname at which CryptPad is served.
-cryptpad_main_hostname: ""
-
-# The hostname at which CryptPad sandbox is served.
-cryptpad_sandbox_hostname: ""
-
 cryptpad_container_image: "{{ cryptpad_container_image_registry_prefix }}cryptpad/cryptpad:{{ cryptpad_container_image_tag }}"
 cryptpad_container_image_tag: "{{ cryptpad_version }}"
 cryptpad_container_image_registry_prefix: "{{ cryptpad_container_image_registry_prefix_upstream }}"
@@ -226,6 +220,9 @@ cryptpad_environment_variables_additional_variables: ""
 #                                                                      #
 ########################################################################
 
+# The hostname at which CryptPad is served.
+cryptpad_main_hostname: ""
+
 # The port number in the container
 cryptpad_main_container_port: 3000
 
@@ -242,6 +239,9 @@ cryptpad_main_container_labels_traefik_hostname: "{{ cryptpad_main_hostname }}"
 # sandbox                                                              #
 #                                                                      #
 ########################################################################
+
+# The hostname at which CryptPad sandbox is served.
+cryptpad_sandbox_hostname: ""
 
 # The port number in the container for sandbox
 cryptpad_sandbox_container_port: 3001
