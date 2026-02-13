@@ -32,6 +32,7 @@
     - config.js
     - env
     - labels
+  register: cryptpad_support_files_result
 
 - name: Run if self-building of CryptPad container image is not enabled
   when: "not cryptpad_container_image_self_build | bool"
@@ -43,19 +44,19 @@
         source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
         force_source: "{{ cryptpad_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
         force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else cryptpad_container_image_force_pull }}"
-      register: result
+      register: cryptpad_container_image_pull_result
       retries: "{{ devture_playbook_help_container_retries_count }}"
       delay: "{{ devture_playbook_help_container_retries_delay }}"
-      until: result is not failed
+      until: cryptpad_container_image_pull_result is not failed
 
     - name: Ensure CryptPad container image is pulled via ansible.builtin.command
       when: devture_systemd_docker_base_container_image_pull_method == 'command'
       ansible.builtin.command:
         cmd: "{{ devture_systemd_docker_base_host_command_docker }} pull {{ cryptpad_container_image }}"
-      register: result
+      register: cryptpad_container_image_pull_result
       retries: "{{ devture_playbook_help_container_retries_count }}"
       delay: "{{ devture_playbook_help_container_retries_delay }}"
-      until: result is not failed
+      until: cryptpad_container_image_pull_result is not failed
       changed_when: "'Downloaded newer image' in result.stdout"
 
 - name: Run if self-building of CryptPad container image is enabled
@@ -106,3 +107,13 @@
     src: "{{ role_path }}/templates/systemd/cryptpad.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ cryptpad_identifier }}.service"
     mode: "0644"
+  register: cryptpad_systemd_service_result
+
+- name: Determine whether CryptPad needs a restart
+  ansible.builtin.set_fact:
+    cryptpad_restart_necessary: >-
+      {{
+        cryptpad_support_files_result.changed | default(false)
+        or cryptpad_systemd_service_result.changed | default(false)
+        or cryptpad_container_image_pull_result.changed | default(false)
+      }}
