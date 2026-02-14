@@ -65,6 +65,7 @@
       community.docker.docker_network:
         name: "{{ cryptpad_container_network }}"
         state: absent
+      register: cryptpad_network_deletion_result
 
     - name: Ensure CryptPad container network does not exist via ansible.builtin.command
       when: devture_systemd_docker_base_container_network_creation_method == 'command'
@@ -72,8 +73,8 @@
         cmd: >-
           {{ devture_systemd_docker_base_host_command_docker }} network rm
           {{ cryptpad_container_network }}
-      register: network_deletion_result
-      changed_when: cryptpad_container_network in network_deletion_result.stdout
+      register: cryptpad_network_deletion_result
+      changed_when: cryptpad_container_network in cryptpad_network_deletion_result.stdout
 
 - name: Check existence of CryptPad local customization data path
   ansible.builtin.stat:
