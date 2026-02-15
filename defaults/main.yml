@@ -40,6 +40,9 @@ cryptpad_container_image_self_build_src_files_path: "{{ cryptpad_base_path }}/do
 # The base container network. It will be auto-created by this role if it doesn't exist already.
 cryptpad_container_network: "{{ cryptpad_identifier }}"
 
+# Control if the container network is deleted on uninstalling.
+cryptpad_container_network_deletion_enabled: true
+
 # Specify how the container publishes its HTTP port (as defined by `cryptpad_main_container_port`).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:2586"), or empty string to not expose.

@@ -60,21 +60,24 @@
       changed_when: cryptpad_base_path_deletion_result.rc == 0
       failed_when: false
 
-    - name: Ensure CryptPad container network does not exist via community.docker.docker_network
-      when: devture_systemd_docker_base_container_network_creation_method == 'ansible-module'
-      community.docker.docker_network:
-        name: "{{ cryptpad_container_network }}"
-        state: absent
-      register: cryptpad_network_deletion_result
+    - name: Ensure CryptPad container network does not exist
+      when: cryptpad_container_network_deletion_enabled
+      block:
+        - name: Ensure CryptPad container network does not exist via community.docker.docker_network
+          when: devture_systemd_docker_base_container_network_creation_method == 'ansible-module'
+          community.docker.docker_network:
+            name: "{{ cryptpad_container_network }}"
+            state: absent
+          register: cryptpad_network_deletion_result
 
-    - name: Ensure CryptPad container network does not exist via ansible.builtin.command
-      when: devture_systemd_docker_base_container_network_creation_method == 'command'
-      ansible.builtin.command:
-        cmd: >-
-          {{ devture_systemd_docker_base_host_command_docker }} network rm
-          {{ cryptpad_container_network }}
-      register: cryptpad_network_deletion_result
-      changed_when: cryptpad_container_network in cryptpad_network_deletion_result.stdout
+        - name: Ensure CryptPad container network does not exist via ansible.builtin.command
+          when: devture_systemd_docker_base_container_network_creation_method == 'command'
+          ansible.builtin.command:
+            cmd: >-
+              {{ devture_systemd_docker_base_host_command_docker }} network rm
+              {{ cryptpad_container_network }}
+          register: cryptpad_network_deletion_result
+          changed_when: cryptpad_container_network in cryptpad_network_deletion_result.stdout
 
 - name: Check existence of CryptPad local customization data path
   ansible.builtin.stat:
