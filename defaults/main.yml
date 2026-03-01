@@ -192,6 +192,37 @@ cryptpad_systemd_wanted_services_list_default: []
 cryptpad_systemd_wanted_services_list_auto: []
 cryptpad_systemd_wanted_services_list_custom: []
 
+# Controls how long to wait for the container to stop gracefully before killing it.
+cryptpad_container_stop_grace_time_seconds: "{{ devture_systemd_docker_base_container_stop_grace_time_seconds }}"
+
+# Controls how long the pre-start cleanup should wait for stale container-name release
+# before failing startup explicitly.
+cryptpad_container_cleanup_timeout_seconds: "{{ devture_systemd_docker_base_container_cleanup_timeout_seconds }}"
+
+# Controls the delay between pre-start cleanup retries.
+cryptpad_container_cleanup_retry_delay_seconds: "{{ devture_systemd_docker_base_container_cleanup_retry_delay_seconds }}"
+
+# Shell command used in the systemd pre-start phase to deterministically remove a stale
+# container and wait until Docker releases its name.
+cryptpad_container_cleanup_command: |
+  i=0;
+  while [ "$i" -lt {{ cryptpad_container_cleanup_timeout_seconds }} ]; do
+  {{ devture_systemd_docker_base_host_command_docker }} stop -t {{ cryptpad_container_stop_grace_time_seconds }} {{ cryptpad_identifier }} >/dev/null 2>&1 || true;
+  {{ devture_systemd_docker_base_host_command_docker }} rm -f {{ cryptpad_identifier }} >/dev/null 2>&1 || true;
+  if {{ devture_systemd_docker_base_host_command_docker }} container inspect {{ cryptpad_identifier }} >/dev/null 2>&1; then
+  i=$((i + 1));
+  sleep {{ cryptpad_container_cleanup_retry_delay_seconds }};
+  continue;
+  fi;
+  if {{ devture_systemd_docker_base_host_command_docker }} info >/dev/null 2>&1; then
+  exit 0;
+  fi;
+  echo "Failed to query Docker daemon while cleaning up {{ cryptpad_identifier }}" >&2;
+  exit 1;
+  done;
+  echo "Failed to remove stale container {{ cryptpad_identifier }} after {{ cryptpad_container_cleanup_timeout_seconds }} attempts" >&2;
+  exit 1
+
 # Specify public signing keys of user accounts to allow them to access to the administration panel.
 # Example:
 #  - "[cryptpad-user1@example.org/YZgXQxKR0Rcb6r6CmxHPdAGLVludrAF2lEnkbx1vVOo=]"
