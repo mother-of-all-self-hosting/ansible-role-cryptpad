@@ -85,7 +85,7 @@
   register: cryptpad_customize_path_stat
 
 # We just want to notify the user. Deleting data is too destructive.
-- name: Notify if CryptPad local customization data remains
+- name: Inject the message about the remaining CryptPad local customization data path
   when: cryptpad_customize_path_stat.stat.exists | bool
   ansible.builtin.set_fact:
     devture_playbook_runtime_messages_list: |
@@ -103,7 +103,7 @@
   register: cryptpad_data_root_path_stat
 
 # We just want to notify the user. Deleting data is too destructive.
-- name: Notify if CryptPad local data remains
+- name: Inject the message about the remaining CryptPad local data path
   when: cryptpad_data_root_path_stat.stat.exists | bool
   ansible.builtin.set_fact:
     devture_playbook_runtime_messages_list: |
