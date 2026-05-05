@@ -29,7 +29,6 @@ cryptpad_container_image_tag: "version-{{ cryptpad_version }}"
 cryptpad_container_image_registry_prefix: "{{ cryptpad_container_image_registry_prefix_upstream }}"
 cryptpad_container_image_registry_prefix_upstream: "{{ cryptpad_container_image_registry_prefix_upstream_default }}"
 cryptpad_container_image_registry_prefix_upstream_default: docker.io/
-cryptpad_container_image_force_pull: "{{ cryptpad_container_image.endswith(':latest') }}"
 
 cryptpad_container_image_self_build: false
 cryptpad_container_image_self_build_name: "cryptpad/cryptpad:{{ cryptpad_container_image_self_build_repo_version }}"

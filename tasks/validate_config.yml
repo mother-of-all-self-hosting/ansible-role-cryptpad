@@ -18,6 +18,7 @@
     - { "old": "cryptpad_log_to_stdout", "new": "cryptpad_config_log_to_stdout" }
     - { "old": "cryptpad_log_level", "new": "cryptpad_config_log_level" }
     - { "old": "cryptpad_default_storage_limit", "new": "cryptpad_config_maximum_upload_size" }
+    - { "old": "cryptpad_container_image_force_pull", "new": "<removed> (the new community.docker.docker_image_pull module handles this natively)" }
 
 - name: Fail if required CryptPad settings not defined
   ansible.builtin.fail:
