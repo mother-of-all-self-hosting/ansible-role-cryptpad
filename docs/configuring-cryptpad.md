@@ -59,7 +59,7 @@ cryptpad_sandbox_hostname: "sandbox.example.com"
 
 After adjusting the hostnames, make sure to adjust your DNS records to point them to your server.
 
-## Enabling spreadsheets (optional)
+### Enabling spreadsheets (optional)
 
 CryptPad’s spreadsheet editor is backed by its bundled OnlyOffice integration. If the `Sheets` or `Spreadsheet` app does not show up in the UI, enable that bundle explicitly and persist its local data with additional bind mounts by adding the following configuration to your `vars.yml` file:
 
