@@ -12,6 +12,7 @@ SPDX-FileCopyrightText: 2023 Antonis Christofides
 SPDX-FileCopyrightText: 2023 Felix Stupp
 SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
 SPDX-FileCopyrightText: 2024-2026 Suguru Hirahara
+SPDX-FileCopyrightText: 2026 microchipster
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
@@ -57,6 +58,23 @@ cryptpad_sandbox_hostname: "sandbox.example.com"
 ```
 
 After adjusting the hostnames, make sure to adjust your DNS records to point them to your server.
+
+## Enabling spreadsheets (optional)
+
+CryptPad’s spreadsheet editor is backed by its bundled OnlyOffice integration. If the `Sheets` or `Spreadsheet` app does not show up in the UI, enable that bundle explicitly and persist its local data with additional bind mounts by adding the following configuration to your `vars.yml` file:
+
+```yaml
+cryptpad_environment_variables_additional_variables: |-
+    CPAD_INSTALL_ONLYOFFICE=yes
+
+cryptpad_container_additional_volumes_custom:
+    - type: bind
+      src: "{{ cryptpad_base_path }}/onlyoffice-dist"
+      dst: /cryptpad/www/common/onlyoffice/dist
+    - type: bind
+      src: "{{ cryptpad_base_path }}/onlyoffice-conf"
+      dst: /cryptpad/onlyoffice-conf
+```
 
 ### Extending the configuration
 
