@@ -13,6 +13,11 @@ traefik.docker.network={{ cryptpad_container_labels_traefik_docker_network }}
 
 {% set middlewares = [] %}
 
+{% if cryptpad_container_labels_traefik_middleware_basic_auth_enabled %}
+{% set middlewares = middlewares + [cryptpad_identifier + '-basic-auth'] %}
+traefik.http.middlewares.{{ cryptpad_identifier }}-basic-auth.basicauth.users={{ cryptpad_container_labels_traefik_middleware_basic_auth_users }}
+{% endif %}
+
 {% if cryptpad_container_labels_traefik_additional_request_headers.keys() | length > 0 %}
 {% for name, value in cryptpad_container_labels_traefik_additional_request_headers.items() %}
 traefik.http.middlewares.{{ cryptpad_identifier }}-add-request-headers.headers.customrequestheaders.{{ name }}={{ value }}

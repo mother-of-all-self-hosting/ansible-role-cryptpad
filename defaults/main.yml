@@ -75,6 +75,9 @@ cryptpad_container_labels_traefik_priority: 0
 cryptpad_container_labels_traefik_entrypoints: web-secure
 cryptpad_container_labels_traefik_tls: "{{ cryptpad_container_labels_traefik_entrypoints != 'web' }}"
 cryptpad_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+cryptpad_container_labels_traefik_middleware_basic_auth_enabled: false
+# See: https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/basicauth/
+cryptpad_container_labels_traefik_middleware_basic_auth_users: ""
 
 # Controls which additional headers to attach to all HTTP requests.
 # To add your own custom request headers, use `cryptpad_container_labels_traefik_additional_request_headers_custom`
