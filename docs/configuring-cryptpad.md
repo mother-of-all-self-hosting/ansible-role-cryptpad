@@ -52,9 +52,9 @@ cryptpad_enabled: true
 To enable CryptPad you need to set the hostnames as well. As CryptPad requires two hostnames as described on [this section](https://docs.cryptpad.org/en/admin_guide/installation.html#admin-domain-config) of the documentation, add the following configuration to your `vars.yml` file for each of them. Make sure to replace them with your own value.
 
 ```yaml
-cryptpad_main_hostname: "main.example.com"
+cryptpad_hostname_main: "main.example.com"
 
-cryptpad_sandbox_hostname: "sandbox.example.com"
+cryptpad_hostname_sandbox: "sandbox.example.com"
 ```
 
 After adjusting the hostnames, make sure to adjust your DNS records to point them to your server.

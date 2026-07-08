@@ -267,12 +267,12 @@ cryptpad_restart_necessary: false
 ########################################################################
 
 # The hostname at which CryptPad is served.
-cryptpad_main_hostname: ""
+cryptpad_hostname_main: ""
 
 # The port number in the container
 cryptpad_main_container_port: 3000
 
-cryptpad_main_container_labels_traefik_hostname: "{{ cryptpad_main_hostname }}"
+cryptpad_main_container_labels_traefik_hostname: "{{ cryptpad_hostname_main }}"
 
 ########################################################################
 #                                                                      #
@@ -287,12 +287,12 @@ cryptpad_main_container_labels_traefik_hostname: "{{ cryptpad_main_hostname }}"
 ########################################################################
 
 # The hostname at which CryptPad sandbox is served.
-cryptpad_sandbox_hostname: ""
+cryptpad_hostname_sandbox: ""
 
 # The port number in the container for sandbox
 cryptpad_sandbox_container_port: 3001
 
-cryptpad_sandbox_container_labels_traefik_hostname: "{{ cryptpad_sandbox_hostname }}"
+cryptpad_sandbox_container_labels_traefik_hostname: "{{ cryptpad_hostname_sandbox }}"
 
 ########################################################################
 #                                                                      #
