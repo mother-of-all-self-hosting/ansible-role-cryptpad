@@ -1,0 +1,53 @@
+# SPDX-FileCopyrightText: 2026 Suguru Hirahara
+# SPDX-FileCopyrightText: 2026 spatterlight
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Verify CryptPad systemd service
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Wait for CryptPad service to become active (up to 180s)
+      ansible.builtin.systemd:
+        name: cryptpad.service
+      register: cryptpad_service
+      until: cryptpad_service.status.ActiveState == 'active'
+      retries: 36
+      delay: 5
+
+    - name: Assert CryptPad service is active
+      ansible.builtin.assert:
+        that: cryptpad_service.status.ActiveState == 'active'
+        fail_msg: "cryptpad.service not active ({{ cryptpad_service.status.ActiveState }})"
+        success_msg: "cryptpad.service is active"
+
+    - name: Retrieve CryptPad service log for debugging
+      when: cryptpad_debug_service_enabled | bool
+      ansible.builtin.command:
+        cmd: journalctl -xeu cryptpad.service
+      changed_when: false
+
+    - name: Wait for CryptPad HTTP endpoint to respond (up to 10m)
+      ansible.builtin.uri:
+        url: "http://localhost:3000/"
+        method: GET
+        status_code: [200, 302]
+        follow_redirects: none
+      register: cryptpad_endpoint
+      until: cryptpad_endpoint.status in [200, 302]
+      retries: 120
+      delay: 5
+
+    - name: Assert CryptPad HTTP endpoint responds
+      ansible.builtin.assert:
+        that: cryptpad_endpoint.status in [200, 302]
+        fail_msg: "CryptPad did not respond as expected ({{ cryptpad_endpoint.status | default('no response') }})"
+        success_msg: "CryptPad responded with {{ cryptpad_endpoint.status }}"
+
+    - name: Show CryptPad systemd service status summary
+      ansible.builtin.debug:
+        msg:
+          - "CryptPad systemd: {{ cryptpad_service.status.ActiveState }}"
+          - "CryptPad HTTP: {{ cryptpad_endpoint.status }}"

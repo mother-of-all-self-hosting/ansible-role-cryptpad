@@ -22,6 +22,7 @@
   when: cryptpad_enabled | bool
   tags:
     - get-installation-url-cryptpad
+    - molecule-notest
   block:
     - name: Extract URL for CryptPad installation
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/get_installation_url.yml"
