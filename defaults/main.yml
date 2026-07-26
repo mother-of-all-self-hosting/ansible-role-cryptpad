@@ -42,7 +42,7 @@ cryptpad_container_network: "{{ cryptpad_identifier }}"
 # Control if the container network is deleted on uninstalling.
 cryptpad_container_network_deletion_enabled: true
 
-# Specify how the container publishes its HTTP port (as defined by `cryptpad_main_container_port`).
+# Specify how the container publishes its HTTP port (as defined by `cryptpad_container_http_port_main`).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:2586"), or empty string to not expose.
 cryptpad_container_http_host_bind_port: ""
@@ -69,8 +69,8 @@ cryptpad_container_additional_volumes_custom: []
 # To inject your own other container labels, see `cryptpad_container_labels_additional_labels_custom`.
 cryptpad_container_labels_traefik_enabled: true
 cryptpad_container_labels_traefik_docker_network: "{{ cryptpad_container_network }}"
-# Hostnames are specified to `cryptpad_main_container_labels_traefik_hostname` and `cryptpad_sandbox_container_labels_traefik_hostname` below.
-cryptpad_container_labels_traefik_rule: "Host(`{{ cryptpad_main_container_labels_traefik_hostname }}`) || Host(`{{ cryptpad_sandbox_container_labels_traefik_hostname }}`)"
+# Hostnames are specified to `cryptpad_container_labels_traefik_hostname_main` and `cryptpad_container_labels_traefik_hostname_sandbox` below.
+cryptpad_container_labels_traefik_rule: "Host(`{{ cryptpad_container_labels_traefik_hostname_main }}`) || Host(`{{ cryptpad_container_labels_traefik_hostname_sandbox }}`)"
 cryptpad_container_labels_traefik_priority: 0
 cryptpad_container_labels_traefik_entrypoints: web-secure
 cryptpad_container_labels_traefik_tls: "{{ cryptpad_container_labels_traefik_entrypoints != 'web' }}"
@@ -270,9 +270,9 @@ cryptpad_restart_necessary: false
 cryptpad_hostname_main: ""
 
 # The port number in the container
-cryptpad_main_container_port: 3000
+cryptpad_container_http_port_main: 3000
 
-cryptpad_main_container_labels_traefik_hostname: "{{ cryptpad_hostname_main }}"
+cryptpad_container_labels_traefik_hostname_main: "{{ cryptpad_hostname_main }}"
 
 ########################################################################
 #                                                                      #
@@ -290,9 +290,9 @@ cryptpad_main_container_labels_traefik_hostname: "{{ cryptpad_hostname_main }}"
 cryptpad_hostname_sandbox: ""
 
 # The port number in the container for sandbox
-cryptpad_sandbox_container_port: 3001
+cryptpad_container_http_port_sandbox: 3001
 
-cryptpad_sandbox_container_labels_traefik_hostname: "{{ cryptpad_hostname_sandbox }}"
+cryptpad_container_labels_traefik_hostname_sandbox: "{{ cryptpad_hostname_sandbox }}"
 
 ########################################################################
 #                                                                      #

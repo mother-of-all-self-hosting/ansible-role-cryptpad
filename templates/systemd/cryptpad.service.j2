@@ -32,7 +32,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       --read-only \
       --network={{ cryptpad_container_network }} \
       {% if cryptpad_container_http_host_bind_port %}
-      -p {{ cryptpad_container_http_host_bind_port }}:{{ cryptpad_main_container_port }} \
+      -p {{ cryptpad_container_http_host_bind_port }}:{{ cryptpad_container_http_port_main }} \
       {% endif %}
       --env-file={{ cryptpad_base_path }}/env \
       --label-file={{ cryptpad_base_path }}/labels \

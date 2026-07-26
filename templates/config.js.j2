@@ -71,7 +71,7 @@ module.exports = {
  *  which will proxy websocket traffic to your node server.
  *
  */
-    httpPort: {{ cryptpad_main_container_port }},
+    httpPort: {{ cryptpad_container_http_port_main }},
 
 /*  httpSafePort purpose is to emulate another origin for the sandbox when
  *  you don't have two domains at hand (i.e. when httpSafeOrigin not defined).
@@ -79,7 +79,7 @@ module.exports = {
  *  development instance. The default value is your httpPort + 1.
  *
  */
-    httpSafePort: {{ cryptpad_sandbox_container_port }},
+    httpSafePort: {{ cryptpad_container_http_port_sandbox }},
 
 /*  Websockets need to be exposed on a separate port from the rest of
  *  the platform's HTTP traffic. Port 3003 is used by default.

@@ -13,7 +13,11 @@
   when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - { "old": "cryptpad_main_hostname", "new": "cryptpad_hostname_main" }
+    - { "old": "cryptpad_main_container_port", "new": "cryptpad_container_http_port_main" }
+    - { "old": "cryptpad_main_container_labels_traefik_hostname", "new": "cryptpad_container_labels_traefik_hostname_main" }
     - { "old": "cryptpad_sandbox_hostname", "new": "cryptpad_hostname_sandbox" }
+    - { "old": "cryptpad_sandbox_container_port", "new": "cryptpad_container_http_port_sandbox" }
+    - { "old": "cryptpad_sandbox_container_labels_traefik_hostname", "new": "cryptpad_container_labels_traefik_hostname_sandbox" }
     - { "old": "cryptpad_http_header_content_permission_policy", "new": "cryptpad_http_header_permissions_policy" }
     - { "old": "cryptpad_admin_keys", "new": "cryptpad_config_admin_keys" }
     - { "old": "cryptpad_max_workers", "new": "cryptpad_config_max_workers" }
@@ -49,6 +53,6 @@
           You need to define a required configuration setting (`{{ item.name }}`).
       when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
       with_items:
-        - { "name": "cryptpad_main_container_labels_traefik_hostname", when: true }
-        - { "name": "cryptpad_sandbox_container_labels_traefik_hostname", when: true }
+        - { "name": "cryptpad_container_labels_traefik_hostname_main", when: true }
+        - { "name": "cryptpad_container_labels_traefik_hostname_sandbox", when: true }
         - { "name": "cryptpad_container_labels_traefik_middleware_basic_auth_users", when: "{{ cryptpad_container_labels_traefik_middleware_basic_auth_enabled }}" }
