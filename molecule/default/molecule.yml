@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Suguru Hirahara
 # SPDX-FileCopyrightText: 2026 spatterlight
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -31,14 +32,38 @@ provisioner:
         # Helper variables
         cryptpad_debug_service_enabled: false
 
+        # The port on the host that CryptPad is published on. Both hostnames
+        # are served from this one port, the same way the role's Traefik
+        # labels point both of them at `cryptpad_container_http_port_main`.
+        cryptpad_molecule_bind_port: 3000
+
         # Variables for CryptPad
         cryptpad_uid: 1000
         cryptpad_gid: 1000
-        cryptpad_scheme: http
-        cryptpad_hostname_main: localhost
-        cryptpad_hostname_sandbox: localhost
+
+        # CryptPad loads its UI from a second origin, so that an XSS in the UI
+        # cannot reach the account keys held by the main one. It refuses to
+        # sandbox anything when the two are equal, so the scenario gives them
+        # distinct names. Neither resolves anywhere - the probes in verify.yml
+        # reach the published port directly and pass the hostname along in a
+        # Host header, which is exactly what Traefik does in a real deployment.
+        cryptpad_hostname_main: cryptpad.localhost
+        cryptpad_hostname_sandbox: cryptpad-sandbox.localhost
+
         cryptpad_container_labels_traefik_enabled: false
-        cryptpad_container_http_host_bind_port: 3000
+        cryptpad_container_http_host_bind_port: "127.0.0.1:{{ cryptpad_molecule_bind_port }}"
+
+        # Without Traefik the role leaves the container health-check on its
+        # 60s interval, which is also how long Docker waits before running it
+        # the first time. Shortened so that verify.yml can wait on the
+        # health-check the image ships without stalling for a minute.
+        cryptpad_container_health_interval: 5s
+
+        # Deliberately not the role's default of 20, so that finding the
+        # matching byte count in the configuration CryptPad serves back at
+        # `/api/config` proves the served value came from this scenario's
+        # templated config.js rather than from CryptPad's own default.
+        cryptpad_config_maximum_upload_size: 37
   env:
     # Workaround for https://github.com/ansible/molecule/issues/4391
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:~/.ansible/roles

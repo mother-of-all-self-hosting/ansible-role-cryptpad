@@ -1,14 +1,32 @@
 # SPDX-FileCopyrightText: 2026 Suguru Hirahara
 # SPDX-FileCopyrightText: 2026 spatterlight
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-- name: Verify CryptPad systemd service
+- name: Verify CryptPad
   hosts: all
   become: true
   gather_facts: false
+  vars:
+    # Extracted without a capture group, so that no backslash has to survive
+    # both YAML and Jinja on its way to the regular expression engine.
+    cryptpad_reported_version: >-
+      {{
+        cryptpad_api_config.content
+        | regex_search('ver=[0-9]+[.][0-9]+[.][0-9]+-')
+        | regex_replace('^ver=', '')
+        | regex_replace('-$', '')
+      }}
   tasks:
+    # Role defaults are not in scope here, but the version that Renovate bumps
+    # lives in them and is what the running instance is checked against below.
+    - name: Load the CryptPad role defaults
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: cryptpad_defaults
+
     - name: Wait for CryptPad service to become active (up to 180s)
       ansible.builtin.systemd:
         name: cryptpad.service
@@ -29,25 +47,107 @@
         cmd: journalctl -xeu cryptpad.service
       changed_when: false
 
-    - name: Wait for CryptPad HTTP endpoint to respond (up to 10m)
-      ansible.builtin.uri:
-        url: "http://localhost:3000/"
-        method: GET
-        status_code: [200, 302]
-        follow_redirects: none
-      register: cryptpad_endpoint
-      until: cryptpad_endpoint.status in [200, 302]
+    # CryptPad rebuilds its static assets on every start, which takes a while
+    # on a Molecule host, so this is the slowest gate in the file. The
+    # container image ships a health-check (`curl -f http://localhost:3000/`),
+    # which is the instance's own opinion on whether it is serving yet.
+    #
+    # Read out of `docker inspect`'s JSON rather than through its `--format`
+    # option, because a Go template would collide with Jinja, and through the
+    # Docker CLI rather than `community.docker`, which the ansible-lint
+    # environment used by pre-commit does not have.
+    - name: Wait for the CryptPad container to report itself healthy (up to 10m)
+      ansible.builtin.command:
+        cmd: docker inspect cryptpad
+      register: cryptpad_container_inspect
+      changed_when: false
+      until: (cryptpad_container_inspect.stdout | from_json | first).State.Health.Status == 'healthy'
       retries: 120
       delay: 5
 
-    - name: Assert CryptPad HTTP endpoint responds
+    - name: Assert the running container is the image the role composed
       ansible.builtin.assert:
-        that: cryptpad_endpoint.status in [200, 302]
-        fail_msg: "CryptPad did not respond as expected ({{ cryptpad_endpoint.status | default('no response') }})"
-        success_msg: "CryptPad responded with {{ cryptpad_endpoint.status }}"
+        that: (cryptpad_container_inspect.stdout | from_json | first).Config.Image == cryptpad_expected_image
+        fail_msg: >-
+          The container runs {{ (cryptpad_container_inspect.stdout | from_json | first).Config.Image }},
+          expected {{ cryptpad_expected_image }}
+        success_msg: "The container runs {{ cryptpad_expected_image }}"
+      vars:
+        cryptpad_expected_image: 'docker.io/cryptpad/cryptpad:version-{{ cryptpad_defaults.cryptpad_version }}'
 
-    - name: Show CryptPad systemd service status summary
+    # The landing page is fetched over the published port with the main
+    # hostname in a Host header, which is the request Traefik forwards in a
+    # real deployment. The page is generated at start-up from the templated
+    # config.js, so the Open Graph URL below carries this scenario's hostname
+    # and could not come from a container that failed to read its config.
+    - name: Fetch the CryptPad landing page
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:{{ cryptpad_molecule_bind_port }}/"
+        method: GET
+        headers:
+          Host: "{{ cryptpad_hostname_main }}"
+        follow_redirects: none
+        return_content: true
+      register: cryptpad_index
+
+    - name: Assert the CryptPad UI is served
+      ansible.builtin.assert:
+        that:
+          - cryptpad_index.status == 200
+          - "'CryptPad: Collaboration suite, encrypted and open-source' in cryptpad_index.content"
+          - "'JavaScript must be enabled to perform encryption in your browser' in cryptpad_index.content"
+          - cryptpad_expected_og_url in cryptpad_index.content
+        fail_msg: "The CryptPad landing page is not what a serving instance renders (HTTP {{ cryptpad_index.status }})"
+        success_msg: "The CryptPad landing page renders the UI, pointing at {{ cryptpad_expected_og_url }}"
+      vars:
+        cryptpad_expected_og_url: 'https://{{ cryptpad_hostname_main }}/index.html'
+
+    # `/api/config` is assembled by the Node server from the configuration it
+    # actually loaded, and is served only once the instance is up, so it ties
+    # what is being served to what the role templated. Every value asserted
+    # below is one this scenario set: the two origins come from the hostname
+    # variables, and the upload size is deliberately not CryptPad's own
+    # default, so it can only have arrived through config.js.
+    - name: Fetch the CryptPad server configuration
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:{{ cryptpad_molecule_bind_port }}/api/config"
+        method: GET
+        headers:
+          Host: "{{ cryptpad_hostname_main }}"
+        follow_redirects: none
+        return_content: true
+      register: cryptpad_api_config
+
+    - name: Assert the served configuration is the one the role templated
+      ansible.builtin.assert:
+        that:
+          - cryptpad_api_config.status == 200
+          - cryptpad_expected_unsafe_origin in cryptpad_api_config.content
+          - cryptpad_expected_safe_origin in cryptpad_api_config.content
+          - cryptpad_expected_upload_size in cryptpad_api_config.content
+        fail_msg: "CryptPad does not serve the configuration the role templated: {{ cryptpad_api_config.content | default('no response') }}"
+        success_msg: "CryptPad serves the origins and the upload size the role templated"
+      vars:
+        cryptpad_expected_unsafe_origin: '"httpUnsafeOrigin": "https://{{ cryptpad_hostname_main }}"'
+        cryptpad_expected_safe_origin: '"httpSafeOrigin": "https://{{ cryptpad_hostname_sandbox }}"'
+        cryptpad_expected_upload_size: '"maxUploadSize": {{ cryptpad_config_maximum_upload_size * 1024 * 1024 }}'
+
+    # CryptPad cache-busts its assets with `ver=<its own version>-<a key that
+    # changes on every start>`, taking the version straight from the
+    # package.json of the code that is running. That makes this the honest
+    # served surface for which version answered the request, unlike the image
+    # tag, which only says what was asked to start.
+    - name: Assert the running CryptPad is the version this role installs
+      ansible.builtin.assert:
+        that: cryptpad_reported_version == cryptpad_defaults.cryptpad_version
+        fail_msg: "CryptPad reports {{ cryptpad_reported_version | default('no version') }}, expected {{ cryptpad_defaults.cryptpad_version }}"
+        success_msg: "CryptPad reports {{ cryptpad_reported_version }}"
+
+    - name: Show CryptPad verification summary
       ansible.builtin.debug:
         msg:
           - "CryptPad systemd: {{ cryptpad_service.status.ActiveState }}"
-          - "CryptPad HTTP: {{ cryptpad_endpoint.status }}"
+          - "CryptPad container health: {{ (cryptpad_container_inspect.stdout | from_json | first).State.Health.Status }}"
+          - "CryptPad landing page: HTTP {{ cryptpad_index.status }}"
+          - "CryptPad served config: HTTP {{ cryptpad_api_config.status }}"
+          - "CryptPad version: {{ cryptpad_reported_version }}"
