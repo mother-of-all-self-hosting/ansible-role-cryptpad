@@ -5,9 +5,11 @@
   ],
   "packageRules": [
     {
+      "description": "CryptPad publishes its releases as `version-X.Y.Z` Docker tags, next to unrelated `latest` and `opendesk-*` ones. `cryptpad_version` holds the bare `X.Y.Z` part (`cryptpad_container_image_tag` re-adds the `version-` prefix), so `extractVersion` strips the prefix off the tags before they get compared against it and written back. The regex versioning then only admits pure `X.Y.Z` tags, which discards `latest` and `opendesk-*`.",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["cryptpad/cryptpad"],
-      "versioning": "regex:^version-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$"
+      "extractVersion": "^version-(?<version>.+)$",
+      "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$"
     }
   ]
 }
