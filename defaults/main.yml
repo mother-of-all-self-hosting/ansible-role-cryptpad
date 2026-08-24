@@ -18,7 +18,7 @@ cryptpad_data_path: "{{ cryptpad_data_root_path }}/data"
 cryptpad_files_path: "{{ cryptpad_data_root_path }}/files"
 cryptpad_blob_path: "{{ cryptpad_data_root_path }}/blob"
 
-# renovate: datasource=docker depName=cryptpad/cryptpad
+# renovate: datasource=docker depName=cryptpad/cryptpad versioning=semver
 cryptpad_version: 2026.5.1
 
 cryptpad_uid: ""
