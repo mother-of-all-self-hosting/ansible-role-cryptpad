@@ -141,11 +141,11 @@
         fail_msg: "CryptPad reports {{ cryptpad_reported_version | default('none') }}, expected {{ cryptpad_defaults.cryptpad_version }}"
         success_msg: "CryptPad reports {{ cryptpad_reported_version }}"
 
-    - name: Show CryptPad verification summary
+    - name: Show the CryptPad verification summary
       ansible.builtin.debug:
         msg:
           - "CryptPad systemd: {{ cryptpad_service.status.ActiveState }}"
+          - "CryptPad version: {{ cryptpad_reported_version }}"
           - "CryptPad container health: {{ (cryptpad_container_inspect.stdout | from_json | first).State.Health.Status }}"
           - "CryptPad landing page: HTTP {{ cryptpad_index.status }}"
           - "CryptPad served config: HTTP {{ cryptpad_api_config.status }}"
-          - "CryptPad version: {{ cryptpad_reported_version }}"
