@@ -134,13 +134,11 @@
 
     # CryptPad cache-busts its assets with `ver=<its own version>-<a key that
     # changes on every start>`, taking the version straight from the
-    # package.json of the code that is running. That makes this the honest
-    # served surface for which version answered the request, unlike the image
-    # tag, which only says what was asked to start.
+    # package.json of the code that is running.
     - name: Assert the running CryptPad is the version this role installs
       ansible.builtin.assert:
         that: cryptpad_reported_version == cryptpad_defaults.cryptpad_version
-        fail_msg: "CryptPad reports {{ cryptpad_reported_version | default('no version') }}, expected {{ cryptpad_defaults.cryptpad_version }}"
+        fail_msg: "CryptPad reports {{ cryptpad_reported_version | default('none') }}, expected {{ cryptpad_defaults.cryptpad_version }}"
         success_msg: "CryptPad reports {{ cryptpad_reported_version }}"
 
     - name: Show CryptPad verification summary
