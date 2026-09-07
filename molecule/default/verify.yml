@@ -66,33 +66,6 @@
       vars:
         cryptpad_expected_image: 'docker.io/cryptpad/cryptpad:version-{{ cryptpad_defaults.cryptpad_version }}'
 
-    # The landing page is fetched over the published port with the main
-    # hostname in a Host header, which is the request Traefik forwards in a
-    # real deployment. The page is generated at start-up from the templated
-    # config.js, so the Open Graph URL below carries this scenario's hostname
-    # and could not come from a container that failed to read its config.
-    - name: Fetch the CryptPad landing page
-      ansible.builtin.uri:
-        url: "http://127.0.0.1:{{ cryptpad_molecule_bind_port }}/"
-        method: GET
-        headers:
-          Host: "{{ cryptpad_hostname_main }}"
-        follow_redirects: none
-        return_content: true
-      register: cryptpad_index
-
-    - name: Assert the CryptPad UI is served
-      ansible.builtin.assert:
-        that:
-          - cryptpad_index.status == 200
-          - "'CryptPad: Collaboration suite, encrypted and open-source' in cryptpad_index.content"
-          - "'JavaScript must be enabled to perform encryption in your browser' in cryptpad_index.content"
-          - cryptpad_expected_og_url in cryptpad_index.content
-        fail_msg: "The CryptPad landing page is not what a serving instance renders (HTTP {{ cryptpad_index.status }})"
-        success_msg: "The CryptPad landing page renders the UI, pointing at {{ cryptpad_expected_og_url }}"
-      vars:
-        cryptpad_expected_og_url: 'https://{{ cryptpad_hostname_main }}/index.html'
-
     # `/api/config` is assembled by the Node server from the configuration it
     # actually loaded, and is served only once the instance is up, so it ties
     # what is being served to what the role templated. Every value asserted
@@ -143,6 +116,33 @@
         that: cryptpad_reported_version == cryptpad_defaults.cryptpad_version
         fail_msg: "CryptPad reports {{ cryptpad_reported_version | default('none') }}, expected {{ cryptpad_defaults.cryptpad_version }}"
         success_msg: "CryptPad reports {{ cryptpad_reported_version }}"
+
+    # The landing page is fetched over the published port with the main
+    # hostname in a Host header, which is the request Traefik forwards in a
+    # real deployment. The page is generated at start-up from the templated
+    # config.js, so the Open Graph URL below carries this scenario's hostname
+    # and could not come from a container that failed to read its config.
+    - name: Fetch the CryptPad landing page
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:{{ cryptpad_molecule_bind_port }}/"
+        method: GET
+        headers:
+          Host: "{{ cryptpad_hostname_main }}"
+        follow_redirects: none
+        return_content: true
+      register: cryptpad_index
+
+    - name: Assert the CryptPad UI is served
+      ansible.builtin.assert:
+        that:
+          - cryptpad_index.status == 200
+          - "'CryptPad: Collaboration suite, encrypted and open-source' in cryptpad_index.content"
+          - "'JavaScript must be enabled to perform encryption in your browser' in cryptpad_index.content"
+          - cryptpad_expected_og_url in cryptpad_index.content
+        fail_msg: "The CryptPad landing page is not what a serving instance renders (HTTP {{ cryptpad_index.status }})"
+        success_msg: "The CryptPad landing page renders the UI, pointing at {{ cryptpad_expected_og_url }}"
+      vars:
+        cryptpad_expected_og_url: 'https://{{ cryptpad_hostname_main }}/index.html'
 
     - name: Show the CryptPad verification summary
       ansible.builtin.debug:
