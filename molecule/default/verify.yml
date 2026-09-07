@@ -18,21 +18,27 @@
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
         name: cryptpad_defaults
 
-    - name: Wait for CryptPad service to become active (up to 180s)
-      ansible.builtin.systemd:
+    - name: Wait for the CryptPad systemd service to become active (up to 180s)
+      ansible.builtin.systemd_service:
         name: cryptpad.service
       register: cryptpad_service
       until: cryptpad_service.status.ActiveState == 'active'
       retries: 36
       delay: 5
+      # So that giving up is reported by the assertion below rather than as a
+      # wall of systemd unit properties.
+      failed_when: false
 
-    - name: Assert CryptPad service is active
+    # `Restart=always` in the systemd unit means that even a container which crashes
+    # and gets restarted reads as active here, so this is a precondition rather than
+    # a result.
+    - name: Assert the CryptPad systemd service is active
       ansible.builtin.assert:
         that: cryptpad_service.status.ActiveState == 'active'
-        fail_msg: "cryptpad.service not active ({{ cryptpad_service.status.ActiveState }})"
+        fail_msg: "cryptpad.service is not active ({{ cryptpad_service.status.ActiveState }})"
         success_msg: "cryptpad.service is active"
 
-    - name: Retrieve CryptPad service log for debugging
+    - name: Retrieve the CryptPad systemd service log for debugging
       when: cryptpad_debug_service_enabled | bool
       ansible.builtin.command:
         cmd: journalctl -xeu cryptpad.service
