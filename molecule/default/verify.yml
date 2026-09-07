@@ -9,16 +9,6 @@
   hosts: all
   become: true
   gather_facts: false
-  vars:
-    # Extracted without a capture group, so that no backslash has to survive
-    # both YAML and Jinja on its way to the regular expression engine.
-    cryptpad_reported_version: >-
-      {{
-        cryptpad_api_config.content
-        | regex_search('ver=[0-9]+[.][0-9]+[.][0-9]+-')
-        | regex_replace('^ver=', '')
-        | regex_replace('-$', '')
-      }}
   tasks:
     # The role is not included in this playbook, so its defaults are not in
     # scope. Reading defaults/main.yml directly ties the version assertion
@@ -132,6 +122,18 @@
         cryptpad_expected_unsafe_origin: '"httpUnsafeOrigin": "https://{{ cryptpad_hostname_main }}"'
         cryptpad_expected_safe_origin: '"httpSafeOrigin": "https://{{ cryptpad_hostname_sandbox }}"'
         cryptpad_expected_upload_size: '"maxUploadSize": {{ cryptpad_config_maximum_upload_size * 1024 * 1024 }}'
+
+    - name: Determine the version of the running CryptPad
+      ansible.builtin.set_fact:
+        # Extracted without a capture group, so that no backslash has to survive
+        # both YAML and Jinja on its way to the regular expression engine.
+        cryptpad_reported_version: >-
+          {{
+            cryptpad_api_config.content
+            | regex_search('ver=[0-9]+[.][0-9]+[.][0-9]+-')
+            | regex_replace('^ver=', '')
+            | regex_replace('-$', '')
+          }}
 
     # CryptPad cache-busts its assets with `ver=<its own version>-<a key that
     # changes on every start>`, taking the version straight from the
