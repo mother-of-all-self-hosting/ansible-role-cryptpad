@@ -50,17 +50,17 @@
     - name: Wait for the CryptPad container to report itself healthy (up to 10m)
       ansible.builtin.command:
         cmd: docker inspect cryptpad
-      register: cryptpad_container_inspect
+      register: cryptpad_container_raw
       changed_when: false
-      until: (cryptpad_container_inspect.stdout | from_json | first).State.Health.Status == 'healthy'
+      until: (cryptpad_container_raw.stdout | from_json | first).State.Health.Status == 'healthy'
       retries: 120
       delay: 5
 
     - name: Assert the running container is the image the role composed
       ansible.builtin.assert:
-        that: (cryptpad_container_inspect.stdout | from_json | first).Config.Image == cryptpad_expected_image
+        that: (cryptpad_container_raw.stdout | from_json | first).Config.Image == cryptpad_expected_image
         fail_msg: >-
-          The container runs {{ (cryptpad_container_inspect.stdout | from_json | first).Config.Image }},
+          The container runs {{ (cryptpad_container_raw.stdout | from_json | first).Config.Image }},
           expected {{ cryptpad_expected_image }}
         success_msg: "The container runs {{ cryptpad_expected_image }}"
       vars:
@@ -149,6 +149,6 @@
         msg:
           - "CryptPad systemd: {{ cryptpad_service.status.ActiveState }}"
           - "CryptPad version: {{ cryptpad_reported_version }}"
-          - "CryptPad container health: {{ (cryptpad_container_inspect.stdout | from_json | first).State.Health.Status }}"
+          - "CryptPad container health: {{ (cryptpad_container_raw.stdout | from_json | first).State.Health.Status }}"
           - "CryptPad landing page: HTTP {{ cryptpad_index.status }}"
           - "CryptPad served config: HTTP {{ cryptpad_api_config.status }}"
