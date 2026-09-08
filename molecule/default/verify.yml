@@ -41,7 +41,7 @@
     - name: Retrieve the CryptPad systemd service log for debugging
       when: cryptpad_debug_service_enabled | bool
       ansible.builtin.command:
-        cmd: journalctl -xeu cryptpad.service
+        cmd: journalctl --no-pager --output=cat --unit=cryptpad.service
       changed_when: false
 
     # CryptPad rebuilds its static assets on every start, which takes a while
