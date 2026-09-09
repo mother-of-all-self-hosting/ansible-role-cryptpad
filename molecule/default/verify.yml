@@ -10,6 +10,8 @@
   become: true
   gather_facts: false
   tasks:
+    - name: Verify that CryptPad works
+      block:
     # The role is not included in this playbook, so its defaults are not in
     # scope. Reading defaults/main.yml directly ties the version assertion
     # below.
@@ -158,3 +160,19 @@
           - "CryptPad container health: {{ (cryptpad_container_raw.stdout | from_json | first).State.Health.Status }}"
           - "CryptPad landing page: HTTP {{ cryptpad_index.status }}"
           - "CryptPad served config: HTTP {{ cryptpad_api_config.status }}"
+
+      rescue:
+        # Whatever went wrong, the reason is almost always in the systemd service log.
+        - name: Retrieve the CryptPad systemd service log
+          ansible.builtin.command:
+            cmd: journalctl --no-pager --output=cat --unit=cryptpad.service
+          register: cryptpad_service_log
+          changed_when: false
+
+        - name: Show the CryptPad systemd service log
+          ansible.builtin.debug:
+            var: cryptpad_service_log.stdout_lines
+
+        - name: Fail because verification did not pass
+          ansible.builtin.fail:
+            msg: "CryptPad verification failed. The systemd service log is printed above."
