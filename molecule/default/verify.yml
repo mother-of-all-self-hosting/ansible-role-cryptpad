@@ -9,6 +9,11 @@
   hosts: all
   become: true
   gather_facts: false
+
+  vars:
+    cryptpad_verify_units:
+      - cryptpad.service
+
   tasks:
     - name: Verify that CryptPad works
       block:
@@ -20,13 +25,14 @@
             file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
             name: cryptpad_defaults
 
-        - name: Wait for the CryptPad systemd service to become active (up to 180s)
+        - name: Wait for the CryptPad systemd services to become active (up to 180s each)
           ansible.builtin.systemd_service:
-            name: cryptpad.service
-          register: cryptpad_service
-          until: cryptpad_service.status.ActiveState == 'active'
+            name: "{{ item }}"
+          register: cryptpad_services
+          until: cryptpad_services.status.ActiveState == 'active'
           retries: 36
           delay: 5
+          loop: "{{ cryptpad_verify_units }}"
           # So that giving up is reported by the assertion below rather than as a
           # wall of systemd unit properties.
           failed_when: false
@@ -34,17 +40,20 @@
         # `Restart=always` in the systemd unit means that even a container which crashes
         # and gets restarted reads as active here, so this is a precondition rather than
         # a result.
-        - name: Assert the CryptPad systemd service is active
+        - name: Assert the CryptPad systemd services are active
           ansible.builtin.assert:
-            that: cryptpad_service.status.ActiveState == 'active'
-            fail_msg: "cryptpad.service is not active ({{ cryptpad_service.status.ActiveState }})"
-            success_msg: "cryptpad.service is active"
+            that: cryptpad_services.results | map(attribute='status.ActiveState') | unique | list == ['active']
+            fail_msg: >-
+              Not every service is active:
+              {{ dict(cryptpad_verify_units | zip(cryptpad_services.results | map(attribute='status.ActiveState'))) }}
+            success_msg: "Every systemd service is active"
 
-        - name: Retrieve the CryptPad systemd service log for debugging
+        - name: Retrieve the CryptPad systemd services log for debugging
           when: cryptpad_debug_service_enabled | bool
           ansible.builtin.command:
-            cmd: journalctl --no-pager --output=cat --unit=cryptpad.service
+            cmd: "journalctl --no-pager --output=cat --unit={{ item }}"
           changed_when: false
+          loop: "{{ cryptpad_verify_units }}"
 
         # CryptPad rebuilds its static assets on every start, which takes a while
         # on a Molecule host, so this is the slowest gate in the file. The
@@ -155,7 +164,7 @@
         - name: Show the CryptPad verification summary
           ansible.builtin.debug:
             msg:
-              - "CryptPad systemd: {{ cryptpad_service.status.ActiveState }}"
+              - "CryptPad systemd: {% for unit, state in cryptpad_verify_units | zip(cryptpad_services.results | map(attribute='status.ActiveState')) %}{{ unit }} ({{ state }}){% if not loop.last %}, {% endif %}{% endfor %}"
               - "CryptPad version: {{ cryptpad_reported_version }}"
               - "CryptPad container health: {{ (cryptpad_container_raw.stdout | from_json | first).State.Health.Status }}"
               - "CryptPad landing page: HTTP {{ cryptpad_index.status }}"
