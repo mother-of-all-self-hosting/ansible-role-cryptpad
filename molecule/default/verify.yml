@@ -64,7 +64,7 @@
         # option, because a Go template would collide with Jinja, and through the
         # Docker CLI rather than `community.docker`, which the ansible-lint
         # environment used by pre-commit does not have.
-        - name: Wait for the CryptPad container to report itself healthy (up to 10m)
+        - name: Wait for CryptPad to report itself healthy (up to 180s)
           ansible.builtin.command:
             cmd: docker inspect cryptpad
           register: cryptpad_container_raw
@@ -72,6 +72,15 @@
           until: (cryptpad_container_raw.stdout | from_json | first).State.Health.Status == 'healthy'
           retries: 120
           delay: 5
+          # So that giving up is reported by the assertion below rather than as a
+          # wall of systemd unit properties.
+          failed_when: false
+
+        - name: Assert CryptPad reports itself healthy
+          ansible.builtin.assert:
+            that: (cryptpad_container_raw.stdout | from_json | first).State.Health.Status == 'healthy'
+            fail_msg: "CryptPad did not report itself healthy: {{ (cryptpad_container_raw.stdout | from_json | first).State.Health.Status | default('no response') }}"
+            success_msg: "CryptPad reports itself healthy"
 
         - name: Assert the running container is the image the role composed
           ansible.builtin.assert:
