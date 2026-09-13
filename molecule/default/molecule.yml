@@ -31,6 +31,7 @@ provisioner:
       all:
         # Helper variables
         cryptpad_debug_service_enabled: false
+        cryptpad_restarts_check_enabled: true
 
         # The port on the host that CryptPad is published on. Both hostnames
         # are served from this one port, the same way the role's Traefik
