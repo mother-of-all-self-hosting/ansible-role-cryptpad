@@ -84,7 +84,7 @@ Take a look at:
 
 - [`defaults/main.yml`](../defaults/main.yml) for some variables that you can customize via your `vars.yml` file.
 
-See [`config.example.js`](https://github.com/cryptpad/cryptpad/blob/main/config/config.example.js) for a complete list of the server's config options.
+Refer to [`config.example.js`](https://github.com/cryptpad/cryptpad/blob/main/config/config.example.js) for a complete list of the server's config options.
 
 ## Installing
 
