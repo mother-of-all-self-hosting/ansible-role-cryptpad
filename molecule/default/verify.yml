@@ -146,7 +146,7 @@
         # The landing page is fetched over the published port with the main
         # hostname in a Host header, which is the request Traefik forwards in a
         # real deployment. The page is generated at start-up from the templated
-        # config.js, so the Open Graph URL below carries this scenario's hostname
+        # infra.js, so the Open Graph URL below carries this scenario's hostname
         # and could not come from a container that failed to read its config.
         - name: Fetch the CryptPad landing page
           ansible.builtin.uri:

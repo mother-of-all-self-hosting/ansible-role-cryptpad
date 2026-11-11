@@ -1,0 +1,33 @@
+{#
+SPDX-FileCopyrightText: 2026 XWiki CryptPad Team <contact@cryptpad.org> and contributors
+SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+module.exports = {
+    "public": {
+        // Public URL of the instance (used for Content-Security-Policy)
+        origin: {{ ('https://' + cryptpad_hostname_main) | to_json }},
+        // Sandbox URL of the instance
+        sandboxOrigin: {{ ('https://' + cryptpad_hostname_sandbox) | to_json }},
+        // Address and port of the nodejs HTTP server
+        httpHost: "::",
+        httpPort: {{ cryptpad_container_http_port_main | int }},
+        httpSafePort: {{ cryptpad_container_http_port_sandbox | int }},
+    },
+    // The internal server topology. These nodes only talk to each other
+    // inside the container, so they listen on localhost.
+    "front": [
+        { host: "localhost", port: 3010 },
+        { host: "localhost", port: 3011 },
+    ],
+    "core": [
+        { host: "localhost", port: 3020 },
+        { host: "localhost", port: 3021 },
+    ],
+    "storage": [
+        { host: "localhost", port: 3030, wsPort: 3040 },
+        { host: "localhost", port: 3031, wsPort: 3041 },
+    ],
+};
