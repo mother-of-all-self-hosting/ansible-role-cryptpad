@@ -30,6 +30,7 @@
     group: "{{ cryptpad_gid }}"
   with_items:
     - config.js
+    - infra.js
     - env
     - labels
   register: cryptpad_support_files_result

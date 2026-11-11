@@ -7,100 +7,14 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 #}
 
 module.exports = {
-/*  CryptPad is designed to serve its content over two domains.
- *  Account passwords and cryptographic content is handled on the 'main' domain,
- *  while the user interface is loaded on a 'sandbox' domain
- *  which can only access information which the main domain willingly shares.
- *
- *  In the event of an XSS vulnerability in the UI (that's bad)
- *  this system prevents attackers from gaining access to your account (that's good).
- *
- *  Most problems with new instances are related to this system blocking access
- *  because of incorrectly configured sandboxes. If you only see a white screen
- *  when you try to load CryptPad, this is probably the cause.
- *
- *  PLEASE READ THE FOLLOWING COMMENTS CAREFULLY.
- *
+/*  The origins, the address and the ports of the HTTP server are configured
+ *  in infra.js.
  */
 
-/*  httpUnsafeOrigin is the URL that clients will enter to load your instance.
- *  Any other URL that somehow points to your instance is supposed to be blocked.
- *  The default provided below assumes you are loading CryptPad from a server
- *  which is running on the same machine, using port 3000.
- *
- *  In a production instance this should be available ONLY over HTTPS
- *  using the default port for HTTPS (443) ie. https://cryptpad.fr
- *  In such a case this should be also handled by NGINX, as documented in
- *  cryptpad/docs/example.nginx.conf (see the $main_domain variable)
- *
+/*  CryptPad launches child processes for each node type to perform
+ *  CPU-intensive tasks in parallel. Set the number of workers per node type.
  */
-    httpUnsafeOrigin: 'https://{{ cryptpad_hostname_main }}',
-
-/*  httpSafeOrigin is the URL that is used for the 'sandbox' described above.
- *  If you're testing or developing with CryptPad on your local machine then
- *  it is appropriate to leave this blank. The default behaviour is to serve
- *  the main domain over port 3000 and to serve the sandbox content over port 3001.
- *
- *  This is not appropriate in a production environment where invasive networks
- *  may filter traffic going over abnormal ports.
- *  To correctly configure your production instance you must provide a URL
- *  with a different domain (a subdomain is sufficient).
- *  It will be used to load the UI in our 'sandbox' system.
- *
- *  This value corresponds to the $sandbox_domain variable
- *  in the example nginx file.
- *
- *  Note that in order for the sandboxing system to be effective
- *  httpSafeOrigin must be different from httpUnsafeOrigin.
- *
- *  CUSTOMIZE AND UNCOMMENT THIS FOR PRODUCTION INSTALLATIONS.
- */
-    httpSafeOrigin: "https://{{ cryptpad_hostname_sandbox }}",
-
-/*  httpAddress specifies the address on which the nodejs server
- *  should be accessible. By default it will listen on localhost
- *  (IPv4 & IPv6 if enabled). If you want it to listen on
- *  a specific address, specify it here. e.g '192.168.0.1'
- *
- */
-    httpAddress: '::',
-
-/*  httpPort specifies on which port the nodejs server should listen.
- *  By default it will serve content over port 3000, which is suitable
- *  for both local development and for use with the provided nginx example,
- *  which will proxy websocket traffic to your node server.
- *
- */
-    httpPort: {{ cryptpad_container_http_port_main }},
-
-/*  httpSafePort purpose is to emulate another origin for the sandbox when
- *  you don't have two domains at hand (i.e. when httpSafeOrigin not defined).
- *  It is meant to be used only in case where you are working on a local
- *  development instance. The default value is your httpPort + 1.
- *
- */
-    httpSafePort: {{ cryptpad_container_http_port_sandbox }},
-
-/*  Websockets need to be exposed on a separate port from the rest of
- *  the platform's HTTP traffic. Port 3003 is used by default.
- *  You can change this to a different port if it is in use by a
- *  different service, but under most circumstances you can leave this
- *  commented and it will work.
- *
- *  In production environments, your reverse proxy (usually NGINX)
- *  will need to forward websocket traffic (/cryptpad_websocket)
- *  to this port.
- *
- */
-    // websocketPort: 3003,
-
-/*  CryptPad will launch a child process for every core available
- *  in order to perform CPU-intensive tasks in parallel.
- *  Some host environments may have a very large number of cores available
- *  or you may want to limit how much computing power CryptPad can take.
- *  If so, set 'maxWorkers' to a positive integer.
- */
-    maxWorkers: {{ cryptpad_config_max_workers }},
+    maxWorkers: {{ cryptpad_config_max_workers | to_json }},
 
     /* =====================
      *       Sessions
@@ -312,11 +226,6 @@ module.exports = {
      *  to false if you'd like to exclude feedback from your logs.
      */
     logFeedback: false,
-
-    /*  CryptPad supports verbose logging
-     *  (false by default)
-     */
-    verbose: false,
 
     /*  Surplus information:
      *

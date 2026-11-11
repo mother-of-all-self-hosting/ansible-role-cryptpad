@@ -237,8 +237,13 @@ cryptpad_container_cleanup_command: |
 #  - "[cryptpad-user2@example.org/YZgXXXXXXXXXXXXXXXXXXAGLVludrAF2lEnkbx1vVYY=]"
 cryptpad_config_admin_keys: []
 
-# Specify how much child processes to be available for the CryptPad instance
-cryptpad_config_max_workers: 4
+# Specify how many worker processes each CryptPad node type may launch.
+# A node type set to "default" uses every available CPU core.
+cryptpad_config_max_workers:
+  core: 2
+  storage: 2
+  http: 2
+  http-storage: 2
 
 # Control if the CryptPad instance logs activity to stdout
 cryptpad_config_log_to_stdout: false

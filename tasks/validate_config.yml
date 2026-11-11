@@ -38,6 +38,14 @@
     - cryptpad_hostname_sandbox
     - cryptpad_container_network
 
+- name: Fail if cryptpad_config_max_workers is not a mapping
+  ansible.builtin.fail:
+    msg: >-
+      cryptpad_config_max_workers must be a mapping of node types to worker counts
+      (e.g. `{"core": 2, "storage": 2, "http": 2, "http-storage": 2}`), not `{{ cryptpad_config_max_workers }}`.
+      Since CryptPad v2026.10.0, the number of workers is set per node type and a single number is ignored.
+  when: cryptpad_config_max_workers is not mapping
+
 - name: Fail if CryptPad logging level is invalid
   ansible.builtin.fail:
     msg: >-
