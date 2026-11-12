@@ -21,6 +21,8 @@ Check [`defaults/main.yml`](defaults/main.yml) for the full list of supported op
 
 ## Development
 
+Please refer to [this page](https://radicle.network/nodes/progressiv.radicle.garden/rad%3Az2SXkaceJw3YmS89T1xGysnFSjWsw/tree/docs/developer-documentation.md) on the MASH playbook for general guidelines about development.
+
 ### Collaborating on Radicle
 
 This role is developed and distributed on Radicle, and you can freely open an issue or a "patch" for updating it.
