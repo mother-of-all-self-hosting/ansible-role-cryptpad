@@ -21,6 +21,21 @@ Check [`defaults/main.yml`](defaults/main.yml) for the full list of supported op
 
 ## Development
 
+### Collaborating on Radicle
+
+This role is developed and distributed on Radicle, and you can freely open an issue or a "patch" for updating it.
+
+Please follow [this "Getting Started" guide](https://radicle.dev/guides/quick-start) on the official documentation for the basic installation and usage of the Radicle toolchain.
+
+You can clone the repository by running the command below:
+
+```sh
+rad clone rad:z38Yp2e9yFouswvrnX5MdgZYaViLb
+```
+
+💡 When you only want to "seed" a repository and have no interest in contributing code, you can still be a repository’s friend with the `rad seed` command. This is Radicle’s version of a ⭐ *star* or 👍 *like*, where you care by sharing it with others on the network.
+
+
 ### pre-commit
 
 You can optionally install a Git pre-commit hook (via [mise](https://mise.jdx.dev/) + [prek](https://prek.j178.dev/)) that runs formatting and linting checks before each commit. See [`.pre-commit-config.yaml`](./.pre-commit-config.yaml) for which hooks are to be executed.
